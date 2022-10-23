@@ -1,7 +1,7 @@
 ---
 title: "STA325 Case Study"
 author: "Chase Mathis"
-format: html
+format: pdf
 execute: 
   warning: false
   echo: false
