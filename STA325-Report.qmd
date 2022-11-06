@@ -1,7 +1,7 @@
 ---
 title: "STA325 Case Study"
 author: "Chase Mathis"
-format: pdf
+format: html
 execute: 
   warning: false
   echo: false
@@ -106,18 +106,17 @@ Stoke's Number quantifies the particle's characteristics i.e. it's size and dens
 
 ```{r}
 StokesLMMean <- lm(mean ~ St, data = centralTrain)
-summary(StokesLMMean)
+summary(StokesLMMean)$coefficients
+
 ```
 
 Using a linear model with only Stoke's predictor, we see that the predictor is statistically signifcant for an alpha level of `0.01`. We can interpret it's coefficient as for every one point increase in Stoke's number, the `mean` of the final turbulent distribution increases by about `0.015` .
 
 ```{r}
 StokesLmVar <- lm(variance ~ St, data = centralTrain)
-summary(StokesLmVar)
-StokesLmSkew <- lm(variance ~ St, data = centralTrain)
-summary(StokesLmSkew)
-StokesLmKurt <- lm(kurtosis ~ St, data = centralTrain)
-summary(StokesLmKurt)
+summary(StokesLmVar)$coefficientsStokesLmSkew <- lm(variance ~ St, data = centralTrain)
+summary(StokesLmSkew)$coefficients
+StokesLmKurt <- lm(kurtosis ~ St, data = centralTrain)summary(StokesLmKurt)$coefficients
 ```
 
 Looking at the summary for a Linear Model predicting the variance of the final distribution with Stoke's Number, we can see that it has essentially no affect on the `variance`, `skewness`, or `kurtosis` of the final system. Overall, this parameter does not seem to have a great impact on the final resulting distribution in general. This can be made clear by visualizing it's relationship:
@@ -156,8 +155,8 @@ p4 <- ggplot(data = centralTrain, aes(x = St, y = kurtosis)) + geom_point()+
 Reynold's Number `Re` in our data is a number that quantifies the initial fluid turbulence of the system.
 
 ```{r}
-ReLM <- lm(mean ~ St, data = centralTrain)
-summary(StokesLM)
+Re_LM_Mean <- lm(mean ~ Re, data = centralTrain)
+summary(Re_LM_Mean)
 ```
 
 ## Prediction
@@ -168,7 +167,7 @@ summary(StokesLM)
 
 ```{r}
 ModelMetricsMoment1 <- tribble(~ModelType, ~MSE,
-                        "Linear Regression", MSE_SLR)
+                        "Linear Regression", 0)
 #ModelMetricsMoment2
 ```
 

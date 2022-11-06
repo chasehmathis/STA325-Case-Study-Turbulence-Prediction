@@ -130,76 +130,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse) <span class="co"># datawrangling</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidymodels) <span class="co">#modeling steps</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr) <span class="co"># nice output</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">theme_set</span>(ggplot2<span class="sc">::</span><span class="fu">theme_minimal</span>())</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(boot)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>train <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/data-train.csv"</span>)</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>test <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/data-test.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">theme_set</span>(ggplot2<span class="sc">::</span><span class="fu">theme_minimal</span>())</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>train <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/data-train.csv"</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>test <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/data-test.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 
 </div>
-</section>
-<section id="model-for-the-mean" class="level2">
-<h2 class="anchored" data-anchor-id="model-for-the-mean">Model for the Mean</h2>
-<p>As there are multiple response variables, I believe making individual models for each one will work best for both prediction and inference. We start with some EDA.</p>
-<section id="exploratory-data-analysis" class="level3">
-<h3 class="anchored" data-anchor-id="exploratory-data-analysis">Exploratory Data Analysis</h3>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="STA325-Report_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-<p>The majority of the first raw moments, i.e.&nbsp;the mean, are very close to zero. This may impact our model, and is something to look out for.</p>
-<section id="investigating-relationship-between-reynolds-and-mean" class="level4">
-<h4 class="anchored" data-anchor-id="investigating-relationship-between-reynolds-and-mean">Investigating Relationship Between Reynold’s and Mean</h4>
-<div class="cell">
-<div class="cell-output-display">
-<table class="table table-sm table-striped">
-<caption>Re Distribution</caption>
-<thead>
-<tr class="header">
-<th style="text-align: right;">Re</th>
-<th style="text-align: right;">Count</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: right;">90</td>
-<td style="text-align: right;">31</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">224</td>
-<td style="text-align: right;">39</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">398</td>
-<td style="text-align: right;">19</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="cell-output-display">
-<p><img src="STA325-Report_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-<p>There are three different values for Reynolds number as seen in the table. Then, when looking at the visualization, it looks like if Reynolds number is the two larger numbers, the mean is very close to zero.</p>
-</section>
-<section id="investigating-relationship-between-stokes-number-and-mean" class="level4">
-<h4 class="anchored" data-anchor-id="investigating-relationship-between-stokes-number-and-mean">Investigating Relationship Between Stokes Number and Mean</h4>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="STA325-Report_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
-</div>
-<div class="cell-output-display">
-<p><img src="STA325-Report_files/figure-html/unnamed-chunk-5-2.png" class="img-fluid" width="672"></p>
-</div>
-<div class="cell-output-display">
-<p><img src="STA325-Report_files/figure-html/unnamed-chunk-5-3.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-<p>If we fit a linear model with only Stoke’s Number, it looks pretty terrible, but if we add in Reynolds number it becomes much better. We noticed a small trend in the plot above, but adding Stokes number takes away some uncertainty and explains when Reynolds number is small.</p>
-</section>
 <section id="investigating-relationship-between-mean-and-froudes-number" class="level4">
 <h4 class="anchored" data-anchor-id="investigating-relationship-between-mean-and-froudes-number">Investigating Relationship Between Mean and Froude’s Number</h4>
 <div class="cell">
@@ -236,13 +177,196 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><p>Inf == <code>Infinity</code></p></li>
 </ul>
 <div class="cell">
-<div class="cell-output-display">
-<p><img src="STA325-Report_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
-</div>
+
 </div>
 <p>It seems hard to distinguish what affect Froud’s number has on the mean from this plot.</p>
 </section>
 </section>
+<section id="simple-linear-regression" class="level2">
+<h2 class="anchored" data-anchor-id="simple-linear-regression">Simple Linear Regression</h2>
+<div class="cell">
+
+</div>
+<div class="cell">
+
+</div>
+<div class="cell">
+
+</div>
+<div class="cell">
+
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<caption>Mean Squared Error using Simple Linear Regression</caption>
+<thead>
+<tr class="header">
+<th style="text-align: right;">Mean</th>
+<th style="text-align: right;">Variance</th>
+<th style="text-align: right;">Skewness</th>
+<th style="text-align: right;">Kurtosis</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">0.0010588</td>
+<td style="text-align: right;">40741.27</td>
+<td style="text-align: right;">2.887832e+12</td>
+<td style="text-align: right;">2.055304e+20</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>It is clear that the using a Simple Linear Regression model to predict anything but the <code>mean</code> is not a good idea as the performance is not good. Nonetheless it serves as a good baseline for predicting further complex models.</p>
+</section>
+<section id="inference" class="level2">
+<h2 class="anchored" data-anchor-id="inference">Inference</h2>
+<section id="stokes-number-st" class="level3">
+<h3 class="anchored" data-anchor-id="stokes-number-st">Stokes Number <code>St</code></h3>
+<p>Stoke’s Number quantifies the particle’s characteristics i.e.&nbsp;it’s size and density. Let’s see how this parameter effects the distribution of the final turbulent space.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = mean ~ St, data = centralTrain)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.07265 -0.03759 -0.03000  0.05094  0.10164 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)   
+(Intercept) 0.027279   0.008642   3.157  0.00219 **
+St          0.015257   0.007438   2.051  0.04327 * 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.05485 on 87 degrees of freedom
+Multiple R-squared:  0.04613,   Adjusted R-squared:  0.03516 
+F-statistic: 4.207 on 1 and 87 DF,  p-value: 0.04327</code></pre>
+</div>
+</div>
+<p>Using a linear model with only Stoke’s predictor, we see that the predictor is statistically signifcant for an alpha level of <code>0.01</code>. We can interpret it’s coefficient as for every one point increase in Stoke’s number, the <code>mean</code> of the final turbulent distribution increases by about <code>0.015</code> .</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = variance ~ St, data = centralTrain)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-197.93  -94.47  -74.77  -59.67  878.21 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept)    50.14      41.03   1.222    0.225
+St             49.27      35.31   1.395    0.167
+
+Residual standard error: 260.4 on 87 degrees of freedom
+Multiple R-squared:  0.02188,   Adjusted R-squared:  0.01064 
+F-statistic: 1.946 on 1 and 87 DF,  p-value: 0.1666</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = variance ~ St, data = centralTrain)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-197.93  -94.47  -74.77  -59.67  878.21 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept)    50.14      41.03   1.222    0.225
+St             49.27      35.31   1.395    0.167
+
+Residual standard error: 260.4 on 87 degrees of freedom
+Multiple R-squared:  0.02188,   Adjusted R-squared:  0.01064 
+F-statistic: 1.946 on 1 and 87 DF,  p-value: 0.1666</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = kurtosis ~ St, data = centralTrain)
+
+Residuals:
+       Min         1Q     Median         3Q        Max 
+-1.516e+10 -6.363e+09 -4.688e+09 -3.432e+09  6.573e+10 
+
+Coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)  
+(Intercept) 2.595e+09  2.849e+09   0.911   0.3650  
+St          4.187e+09  2.452e+09   1.707   0.0913 .
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 1.809e+10 on 87 degrees of freedom
+Multiple R-squared:  0.03242,   Adjusted R-squared:  0.02129 
+F-statistic: 2.915 on 1 and 87 DF,  p-value: 0.09134</code></pre>
+</div>
+</div>
+<p>Looking at the summary for a Linear Model predicting the variance of the final distribution with Stoke’s Number, we can see that it has essentially no affect on the <code>variance</code>, <code>skewness</code>, or <code>kurtosis</code> of the final system. Overall, this parameter does not seem to have a great impact on the final resulting distribution in general. This can be made clear by visualizing it’s relationship:</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="STA325-Report_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="reynolds-number-re" class="level3">
+<h3 class="anchored" data-anchor-id="reynolds-number-re">Reynold’s Number <code>Re</code></h3>
+<p>Reynold’s Number <code>Re</code> in our data is a number that quantifies the initial fluid turbulence of the system.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = mean ~ Re, data = centralTrain)
+
+Residuals:
+      Min        1Q    Median        3Q       Max 
+-0.035392 -0.033840 -0.007089  0.030228  0.084294 
+
+Coefficients:
+              Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  0.1225014  0.0081110   15.10   &lt;2e-16 ***
+Re          -0.0003828  0.0000335  -11.43   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.03551 on 87 degrees of freedom
+Multiple R-squared:  0.6002,    Adjusted R-squared:  0.5956 
+F-statistic: 130.6 on 1 and 87 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="prediction" class="level2">
+<h2 class="anchored" data-anchor-id="prediction">Prediction</h2>
+</section>
+<section id="random-forests" class="level2">
+<h2 class="anchored" data-anchor-id="random-forests">Random Forests</h2>
+</section>
+<section id="evaluating-our-models" class="level2">
+<h2 class="anchored" data-anchor-id="evaluating-our-models">Evaluating Our Models</h2>
+<div class="cell">
+
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="STA325-Report_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="STA325-Report_files/figure-html/unnamed-chunk-15-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="STA325-Report_files/figure-html/unnamed-chunk-15-3.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="STA325-Report_files/figure-html/unnamed-chunk-15-4.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The optimal degree polynomials for predicting mean, variance, skew, and kurtosis are 2, 2, 4, and 3, respectively.</p>
 </section>
 
 </main>
