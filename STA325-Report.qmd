@@ -177,6 +177,17 @@ It is clear that the using a Simple Linear Regression model to predict anything 
 
 ## Inference
 
+### Stokes Number `St`
+
+Stoke's Number quantifies the particle's characteristics i.e. it's size and density. Let's see how this parameter effects the distribution of the final turbulent space.
+
+```{r}
+StokesLM <- lm(mean ~ St, data = centralTrain)
+summary(StokesLM)
+```
+
+Using a linear model with only Stoke's predictor
+
 ## Prediction
 
 ## Random Forests
@@ -190,30 +201,11 @@ ModelMetricsMoment1 <- tribble(~ModelType, ~MSE,
 ```
 
 ```{r, warning = FALSE}
-set.seed(1)
 cv_error <- rep(0,10)
 for(i in 1:10){
   fit <- glm(mean ~ poly(St, i, raw = TRUE) + poly(Re, i, raw = TRUE) + Fr, data = centralTrain)
   cv_error[i] <- cv.glm(centralTrain, fit, K = 10)$delta[1]
 }
-plot(cv_error, type = "b", xlab = "Degree (mean)")
-cv_error <- rep(0,10)
-for(i in 1:10){
-  fit <- glm(variance ~ poly(St, i, raw = TRUE) + poly(Re, i, raw = TRUE) + Fr, data = centralTrain)
-  cv_error[i] <- cv.glm(centralTrain, fit, K = 10)$delta[1]
-}
-plot(cv_error, type = "b", xlab = "Degree (variance)")
-cv_error <- rep(0,10)
-for(i in 1:10){
-  fit <- glm(skewness ~ poly(St, i, raw = TRUE) + poly(Re, i, raw = TRUE) + Fr, data = centralTrain)
-  cv_error[i] <- cv.glm(centralTrain, fit, K = 10)$delta[1]
-}
-plot(cv_error, type = "b", xlab = "Degree (skewness)")
-cv_error <- rep(0,10)
-for(i in 1:10){
-  fit <- glm(kurtosis ~ poly(St, i, raw = TRUE) + poly(Re, i, raw = TRUE) + Fr, data = centralTrain)
-  cv_error[i] <- cv.glm(centralTrain, fit, K = 10)$delta[1]
-}
-plot(cv_error, type = "b", xlab = "Degree (kurtosis)")
+plot(cv_error, type = "b")
+
 ```
-The optimal degree polynomials for predicting mean, variance, skew, and kurtosis are 2, 2, 4, and 3, respectively. 
