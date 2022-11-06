@@ -59,6 +59,27 @@ centralTrain <- centralTrain |>
   )) |> 
   mutate(Fr = factor(Fr, levels = c("Low", "Medium", "Infinity")))
 
+<<<<<<< Updated upstream
+=======
+centralTrain <- centralTrain %>%
+  mutate(Re = case_when(
+    Re == 398 ~ "High",
+    Re == 224 ~ "Medium",
+    Re == 90 ~ "Low")) %>%
+  mutate(Re = factor(Re, levels = c("Low", "Medium", "High")))
+
+centralTrain |> 
+  ggplot(aes(x = mean, fill = Fr)) + 
+  geom_histogram(bins = 8) + 
+  facet_wrap(~Fr) + 
+  theme(axis.text.x = element_text(angle = 45)) + 
+  labs(
+    x = "Raw Moment 1",
+    y = "Count",
+    fill = "Froud's Number",
+    title = "Relationship between Froud's Number and the Mean"
+  )
+>>>>>>> Stashed changes
 ```
 
 It seems hard to distinguish what affect Froud's number has on the mean from this plot.
@@ -97,6 +118,28 @@ SLRModelMetrics |>
 ```
 
 It is clear that the using a Simple Linear Regression model to predict anything but the `mean` is not a good idea as the performance is not good. Nonetheless it serves as a good baseline for predicting further complex models.
+
+## Polynomials
+
+```{r}
+poly_mean <- lm(mean ~ poly(St, 2) + Re + Fr, data = centralTrain)
+mse_poly_mean <- sum(resid(poly_mean)^2)/nrow(centralTrain)
+```
+
+```{r}
+poly_var <- lm(variance ~ poly(St, 2) + Re + Fr, data = centralTrain)
+mse_poly_var <- sum(resid(poly_var)^2)/nrow(centralTrain)
+```
+
+```{r}
+poly_skew <- lm(skewness ~ poly(St, 2) + Re + Fr, data = centralTrain)
+mse_poly_skew <- sum(resid(poly_skew)^2)/nrow(centralTrain)
+```
+
+```{r}
+poly_kurt <- lm(kurtosis ~ poly(St, 2) + Re + Fr, data = centralTrain)
+mse_poly_kurt <- sum(resid(poly_kurt)^2)/nrow(centralTrain)
+```
 
 ## Inference
 
@@ -175,28 +218,40 @@ ModelMetricsMoment1 <- tribble(~ModelType, ~MSE,
 set.seed(1)
 cv_error <- rep(0,10)
 for(i in 1:10){
-  fit <- glm(mean ~ poly(St, i, raw = TRUE) + poly(Re, i, raw = TRUE) + Fr, data = centralTrain)
+  fit <- glm(mean ~ poly(St, i, raw = TRUE), data = centralTrain)
   cv_error[i] <- cv.glm(centralTrain, fit, K = 10)$delta[1]
 }
-plot(cv_error, type = "b", xlab = "Degree (mean)")
-cv_error <- rep(0,10)
-for(i in 1:10){
-  fit <- glm(variance ~ poly(St, i, raw = TRUE) + poly(Re, i, raw = TRUE) + Fr, data = centralTrain)
-  cv_error[i] <- cv.glm(centralTrain, fit, K = 10)$delta[1]
-}
-plot(cv_error, type = "b", xlab = "Degree (variance)")
-cv_error <- rep(0,10)
-for(i in 1:10){
-  fit <- glm(skewness ~ poly(St, i, raw = TRUE) + poly(Re, i, raw = TRUE) + Fr, data = centralTrain)
-  cv_error[i] <- cv.glm(centralTrain, fit, K = 10)$delta[1]
-}
-plot(cv_error, type = "b", xlab = "Degree (skewness)")
-cv_error <- rep(0,10)
-for(i in 1:10){
-  fit <- glm(kurtosis ~ poly(St, i, raw = TRUE) + poly(Re, i, raw = TRUE) + Fr, data = centralTrain)
-  cv_error[i] <- cv.glm(centralTrain, fit, K = 10)$delta[1]
-}
-plot(cv_error, type = "b", xlab = "Degree (kurtosis)")
+plot(cv_error, type = "b", xlab = "Degree (mean, St)")
 ```
 
-The optimal degree polynomials for predicting mean, variance, skew, and kurtosis are 2, 2, 4, and 3, respectively.
+```{r, warning = FALSE}
+set.seed(1)
+cv_error <- rep(0,10)
+for(i in 1:10){
+  fit <- glm(variance ~ poly(St, i, raw = TRUE), data = centralTrain)
+  cv_error[i] <- cv.glm(centralTrain, fit, K = 10)$delta[1]
+}
+plot(cv_error, type = "b", xlab = "Degree (variance, St)")
+```
+
+```{r, warning = FALSE}
+set.seed(1)
+cv_error <- rep(0,10)
+for(i in 1:10){
+  fit <- glm(skewness ~ poly(St, i, raw = TRUE), data = centralTrain)
+  cv_error[i] <- cv.glm(centralTrain, fit, K = 10)$delta[1]
+}
+plot(cv_error, type = "b", xlab = "Degree (skewness, St)")
+```
+
+```{r, warning = FALSE}
+set.seed(1)
+cv_error <- rep(0,10)
+for(i in 1:10){
+  fit <- glm(kurtosis ~ poly(St, i, raw = TRUE), data = centralTrain)
+  cv_error[i] <- cv.glm(centralTrain, fit, K = 10)$delta[1]
+}
+plot(cv_error, type = "b", xlab = "Degree (kurtosis, St)")
+```
+
+The optimal degree polynomials for predicting mean, variance, skew, and kurtosis are all 2 for Stokes Number.
