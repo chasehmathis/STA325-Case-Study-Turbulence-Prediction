@@ -110,7 +110,7 @@ centralTrain |>
 
 Similar to Reynolds number, this number is somewhat non-continuous as there is only three buckets for the number. Therefore I am going to make it a categorical variable to help interprebaility. For instance, how do we interpret Infinity? Instead I will make
 
--    0.052 == `Low`
+-   0.052 == `Low`
 
 -   0.300 == `Medium`
 
@@ -138,3 +138,8 @@ centralTrain |>
 ```
 
 It seems hard to distinguish what affect Froud's number has on the mean from this plot.
+
+```{r}
+ModelMetrics <- tribble(~ModelType, ~MSE,
+                        "Linear Regression", 0)
+```
