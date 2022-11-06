@@ -85,65 +85,6 @@ centralTrain |>
 
 It seems hard to distinguish what affect Froud's number has on the mean from this plot.
 
-## Simple Linear Regression
-
-```{r}
-#| label: Baseline-Model
-SLRMean <- lm(mean ~ St + Re + Fr, data = centralTrain)
-MSE_SLR_Mean <- sum(resid(SLRMean)^2)/nrow(centralTrain)
-```
-
-```{r}
-SLRVar <- lm(variance ~ St + Re + Fr, data = centralTrain)
-MSE_SLR_Var <- sum(resid(SLRVar)^2)/nrow(centralTrain)
-```
-
-```{r}
-SLRSkew <- lm(skewness ~ St + Re + Fr, data = centralTrain)
-MSE_SLR_Skew <- sum(resid(SLRSkew)^2)/nrow(centralTrain)
-```
-
-```{r}
-SLRKurt <- lm(kurtosis ~ St + Re + Fr, data = centralTrain)
-MSE_SLR_Kurt <- sum(resid(SLRKurt)^2)/nrow(centralTrain)
-```
-
-```{r}
-#| label: Model-Metrics-SLR
-
-SLRModelMetrics <- tribble(~Mean, ~Variance, ~Skewness, ~Kurtosis,
-                           MSE_SLR_Mean, MSE_SLR_Var, MSE_SLR_Skew, MSE_SLR_Kurt)
-
-SLRModelMetrics |> 
-  kable(caption = "Mean Squared Error using Simple Linear Regression")
-```
-
-It is clear that the using a Simple Linear Regression model to predict anything but the `mean` is not a good idea as the performance is not good. Nonetheless it serves as a good baseline for predicting further complex models.
-
-## Polynomials
-
-```{r}
-poly_mean <- lm(mean ~ poly(St, 2) + Re + Fr, data = centralTrain)
-mse_poly_mean <- sum(resid(poly_mean)^2)/nrow(centralTrain)
-```
-
-```{r}
-poly_var <- lm(variance ~ poly(St, 2) + Re + Fr, data = centralTrain)
-mse_poly_var <- sum(resid(poly_var)^2)/nrow(centralTrain)
-```
-
-```{r}
-poly_skew <- lm(skewness ~ poly(St, 2) + Re + Fr, data = centralTrain)
-mse_poly_skew <- sum(resid(poly_skew)^2)/nrow(centralTrain)
-```
-
-```{r}
-poly_kurt <- lm(kurtosis ~ poly(St, 2) + Re + Fr, data = centralTrain)
-mse_poly_kurt <- sum(resid(poly_kurt)^2)/nrow(centralTrain)
-```
-
-Using 2nd degree polynomial models while also predicting the moments with Froud's and Reynolds' Numnbers, we get lower MSE's for all four moments, however these MSEs are still outrageously high for skew and kurtosis, indicating that using polynomials would also not be the best way of predicting the moments.
-
 ## Inference
 
 ### Stokes Number `St`
@@ -220,6 +161,8 @@ Similar to the `Mean` model, if we glance at the output, it is clear that `Re` h
 
 This follows the intutition that when a gravitational force is higher, clusters will form at a higher rate resulting in a lower variance number.
 
+## Prediction
+
 ### Simple Linear Regression
 
 ```{r}
@@ -256,7 +199,6 @@ SLRModelMetrics |>
 It is clear that the using a Simple Linear Regression model to predict anything but the `mean` is not a good idea as the performance is not good. Nonetheless it serves as a good baseline for predicting further complex models.
 
 ### Polynomials
-
 
 ```{r, warning = FALSE}
 set.seed(1)
@@ -357,9 +299,6 @@ ModelMetricsMoment4 <- tribble(~ModelType, ~MSE,
                         "2nd Degree Polynomial", mse_poly_kurt)
 ```
 
-
-
 ## TODO:
 
 Splines, (Natural, Cubic...), Tree based model
-
