@@ -26,9 +26,9 @@ test <- read_csv("data/data-test.csv")
 ## mutate data so that we get central moments
 centralTrain <- train |> 
   mutate(mean = R_moment_1,
-         CentralMoment2 = R_moment_2 - R_moment_1^2,
-         CentralMoment3 = R_moment_3 -3*R_moment_1*R_moment_2 + 2*R_moment_1^3,
-         CentralMoment4 = R_moment_4 - 4*R_moment_1*R_moment_3 + 6*R_moment_2*R_moment_1^2 - 3*R_moment_1^4) |> 
+         variance = R_moment_2 - R_moment_1^2,
+         skewness = R_moment_3 -3*R_moment_1*R_moment_2 + 2*R_moment_1^3,
+         kurtosis = R_moment_4 - 4*R_moment_1*R_moment_3 + 6*R_moment_2*R_moment_1^2 - 3*R_moment_1^4) |> 
   select(-contains("R_"))
 ```
 
@@ -122,7 +122,8 @@ centralTrain <- centralTrain |>
     Fr < 0.3 ~ "Low",
     Fr == 0.3 ~ "Medium",
     Fr == Inf ~ "Infinity"
-  ))
+  )) |> 
+  mutate(Fr = factor(Fr, levels = c("Low", "Medium", "Infinity")))
 
 centralTrain |> 
   ggplot(aes(x = mean, fill = Fr)) + 
@@ -139,13 +140,51 @@ centralTrain |>
 
 It seems hard to distinguish what affect Froud's number has on the mean from this plot.
 
-## Linear Regression
+## Simple Linear Regression
+
+```{r}
+#| label: Baseline-Model
+SLRMean <- lm(mean ~ St + Re + Fr, data = centralTrain)
+MSE_SLR_Mean <- sum(resid(SLRMean)^2)/nrow(centralTrain)
+```
+
+```{r}
+SLRVar <- lm(variance ~ St + Re + Fr, data = centralTrain)
+MSE_SLR_Var <- sum(resid(SLRVar)^2)/nrow(centralTrain)
+```
+
+```{r}
+SLRSkew <- lm(skewness ~ St + Re + Fr, data = centralTrain)
+MSE_SLR_Skew <- sum(resid(SLRSkew)^2)/nrow(centralTrain)
+```
+
+```{r}
+SLRKurt <- lm(kurtosis ~ St + Re + Fr, data = centralTrain)
+MSE_SLR_Kurt <- sum(resid(SLRKurt)^2)/nrow(centralTrain)
+```
+
+```{r}
+#| label: Model-Metrics-SLR
+
+SLRModelMetrics <- tribble(~Mean, ~Variance, ~Skewness, ~Kurtosis,
+                           MSE_SLR_Mean, MSE_SLR_Var, MSE_SLR_Skew, MSE_SLR_Kurt)
+
+SLRModelMetrics |> 
+  kable(caption = "Mean Squared Error using Simple Linear Regression")
+```
+
+It is clear that the using a Simple Linear Regression model to predict anything but the `mean` is not a good idea as the performance is not good. Nonetheless it serves as a good baseline for predicting further complex models.
+
+## Inference
+
+## Prediction
 
 ## Random Forests
 
 ## Evaluating Our Models
 
 ```{r}
-ModelMetrics <- tribble(~ModelType, ~MSE,
-                        "Linear Regression", 0)
+ModelMetricsMoment1 <- tribble(~ModelType, ~MSE,
+                        "Linear Regression", MSE_SLR)
+#ModelMetricsMoment2
 ```
