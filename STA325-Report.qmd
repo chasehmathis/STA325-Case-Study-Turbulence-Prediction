@@ -139,6 +139,12 @@ centralTrain |>
 
 It seems hard to distinguish what affect Froud's number has on the mean from this plot.
 
+## Linear Regression
+
+## Random Forests
+
+## Evaluating Our Models
+
 ```{r}
 ModelMetrics <- tribble(~ModelType, ~MSE,
                         "Linear Regression", 0)
