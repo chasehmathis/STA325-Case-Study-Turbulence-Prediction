@@ -254,6 +254,53 @@ It is clear that the using a Simple Linear Regression model to predict anything 
 
 ### Polynomials
 
+
+```{r, warning = FALSE}
+set.seed(1)
+cv_error <- rep(0,10)
+for(i in 1:10){
+  fit <- glm(mean ~ poly(St, i, raw = TRUE), data = centralTrain)
+  cv_error[i] <- cv.glm(centralTrain, fit, K = 10)$delta[1]
+}
+#p1 <- plot(cv_error, type = "b", xlab = "Degree (mean, St)")
+```
+
+```{r, warning = FALSE}
+set.seed(1)
+cv_error <- rep(0,10)
+for(i in 1:10){
+  fit <- glm(variance ~ poly(St, i, raw = TRUE), data = centralTrain)
+  cv_error[i] <- cv.glm(centralTrain, fit, K = 10)$delta[1]
+}
+#p2 <- plot(cv_error, type = "b", xlab = "Degree (variance, St)")
+```
+
+```{r, warning = FALSE}
+set.seed(1)
+cv_error <- rep(0,10)
+for(i in 1:10){
+  fit <- glm(skewness ~ poly(St, i, raw = TRUE), data = centralTrain)
+  cv_error[i] <- cv.glm(centralTrain, fit, K = 10)$delta[1]
+}
+#p3 <- plot(cv_error, type = "b", xlab = "Degree (skewness, St)")
+```
+
+```{r, warning = FALSE}
+set.seed(1)
+cv_error <- rep(0,10)
+for(i in 1:10){
+  fit <- glm(kurtosis ~ poly(St, i, raw = TRUE), data = centralTrain)
+  cv_error[i] <- cv.glm(centralTrain, fit, K = 10)$delta[1]
+}
+#p4 <- plot(cv_error, type = "b", xlab = "Degree (kurtosis, St)")
+```
+
+```{r}
+(p1 + p2)/(p3+p4)
+```
+
+The optimal degree polynomials for predicting mean, variance, skew, and kurtosis are all 2 for Stokes Number.
+
 ```{r}
 poly_mean <- lm(mean ~ poly(St, 2) + Re + Fr, data = centralTrain)
 mse_poly_mean <- sum(resid(poly_mean)^2)/nrow(centralTrain)
@@ -307,48 +354,3 @@ ModelMetricsMoment4 <- tribble(~ModelType, ~MSE,
                         "2nd Degree Polynomial", mse_poly_kurt)
 ```
 
-```{r, warning = FALSE}
-set.seed(1)
-cv_error <- rep(0,10)
-for(i in 1:10){
-  fit <- glm(mean ~ poly(St, i, raw = TRUE), data = centralTrain)
-  cv_error[i] <- cv.glm(centralTrain, fit, K = 10)$delta[1]
-}
-#p1 <- plot(cv_error, type = "b", xlab = "Degree (mean, St)")
-```
-
-```{r, warning = FALSE}
-set.seed(1)
-cv_error <- rep(0,10)
-for(i in 1:10){
-  fit <- glm(variance ~ poly(St, i, raw = TRUE), data = centralTrain)
-  cv_error[i] <- cv.glm(centralTrain, fit, K = 10)$delta[1]
-}
-#p2 <- plot(cv_error, type = "b", xlab = "Degree (variance, St)")
-```
-
-```{r, warning = FALSE}
-set.seed(1)
-cv_error <- rep(0,10)
-for(i in 1:10){
-  fit <- glm(skewness ~ poly(St, i, raw = TRUE), data = centralTrain)
-  cv_error[i] <- cv.glm(centralTrain, fit, K = 10)$delta[1]
-}
-#p3 <- plot(cv_error, type = "b", xlab = "Degree (skewness, St)")
-```
-
-```{r, warning = FALSE}
-set.seed(1)
-cv_error <- rep(0,10)
-for(i in 1:10){
-  fit <- glm(kurtosis ~ poly(St, i, raw = TRUE), data = centralTrain)
-  cv_error[i] <- cv.glm(centralTrain, fit, K = 10)$delta[1]
-}
-#p4 <- plot(cv_error, type = "b", xlab = "Degree (kurtosis, St)")
-```
-
-```{r}
-(p1 + p2)/(p3+p4)
-```
-
-The optimal degree polynomials for predicting mean, variance, skew, and kurtosis are all 2 for Stokes Number.
