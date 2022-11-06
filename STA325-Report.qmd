@@ -59,8 +59,6 @@ centralTrain <- centralTrain |>
   )) |> 
   mutate(Fr = factor(Fr, levels = c("Low", "Medium", "Infinity")))
 
-<<<<<<< Updated upstream
-=======
 centralTrain <- centralTrain %>%
   mutate(Re = case_when(
     Re == 398 ~ "High",
@@ -79,7 +77,6 @@ centralTrain |>
     fill = "Froud's Number",
     title = "Relationship between Froud's Number and the Mean"
   )
->>>>>>> Stashed changes
 ```
 
 It seems hard to distinguish what affect Froud's number has on the mean from this plot.
