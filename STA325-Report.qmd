@@ -34,74 +34,6 @@ centralTrain <- train |>
   select(-contains("R_"))
 ```
 
-## Model for the Mean
-
-As there are multiple response variables, I believe making individual models for each one will work best for both prediction and inference. We start with some EDA.
-
-### Exploratory Data Analysis
-
-```{r}
-centralTrain |> 
-  ggplot(aes(x = mean)) + 
-  geom_histogram(bins = 20) + 
-  labs(
-    x = "Mean",
-    y = "count",
-    title = "Distribution of our Response Variable: The Mean"
-  )
-
-
-```
-
-The majority of the first raw moments, i.e. the mean, are very close to zero. This may impact our model, and is something to look out for.
-
-#### Investigating Relationship Between Reynold's and Mean
-
-```{r}
-centralTrain |> 
-  count(Re) |> 
-  kable(col.names = c("Re", "Count"), caption = "Re Distribution")
-centralTrain |> 
-  ggplot(aes(x = Re, y = mean)) + 
-  geom_point() + 
-  labs(
-    x = "Reynold's Number",
-    y = "Mean",
-    title = "Relationship Between Reynold's Number and the Mean"
-  )
-```
-
-There are three different values for Reynolds number as seen in the table. Then, when looking at the visualization, it looks like if Reynolds number is the two larger numbers, the mean is very close to zero.
-
-#### Investigating Relationship Between Stokes Number and Mean
-
-```{r}
-hist(centralTrain$St, main = "Histogram of Stokes Number", xlab = "Stokes Number")
-centralTrain |> 
-  ggplot(aes(x = St, y = mean)) + 
-  geom_point() + 
-  geom_smooth(method = "lm", se = FALSE) + 
-    labs(
-    x = "Stoke's Number",
-    y = "Mean",
-    title = "Relationship Between ONLY Stoke's Number and the Mean"
-  )
-
-centralTrain |> 
-  ggplot(aes(x = St, y = mean, group = Re)) + 
-  geom_point() + 
-  geom_smooth(method = "lm", se = FALSE) +
-    labs(
-    x = "Stoke's Number",
-    y = "Mean",
-    title = "Relationship Between Stoke's Number and the Mean and Reynold's Number",
-    group = "Reynold's Number"
-  )
-
-```
-
-If we fit a linear model with only Stoke's Number, it looks pretty terrible, but if we add in Reynolds number it becomes much better. We noticed a small trend in the plot above, but adding Stokes number takes away some uncertainty and explains when Reynolds number is small.
-
 #### Investigating Relationship Between Mean and Froude's Number
 
 ```{r}
@@ -127,17 +59,6 @@ centralTrain <- centralTrain |>
   )) |> 
   mutate(Fr = factor(Fr, levels = c("Low", "Medium", "Infinity")))
 
-centralTrain |> 
-  ggplot(aes(x = mean, fill = Fr)) + 
-  geom_histogram(bins = 8) + 
-  facet_wrap(~Fr) + 
-  theme(axis.text.x = element_text(angle = 45)) + 
-  labs(
-    x = "Raw Moment 1",
-    y = "Count",
-    fill = "Froud's Number",
-    title = "Relationship between Froud's Number and the Mean"
-  )
 ```
 
 It seems hard to distinguish what affect Froud's number has on the mean from this plot.
