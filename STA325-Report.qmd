@@ -16,6 +16,7 @@ library(tidyverse) # datawrangling
 library(tidymodels) #modeling steps
 library(knitr) # nice output
 library(boot)
+library(patchwork)
 
 ggplot2::theme_set(ggplot2::theme_minimal())
 
@@ -183,11 +184,60 @@ It is clear that the using a Simple Linear Regression model to predict anything 
 Stoke's Number quantifies the particle's characteristics i.e. it's size and density. Let's see how this parameter effects the distribution of the final turbulent space.
 
 ```{r}
-StokesLM <- lm(mean ~ St, data = centralTrain)
-summary(StokesLM)
+StokesLMMean <- lm(mean ~ St, data = centralTrain)
+summary(StokesLMMean)
 ```
 
-Using a linear model with only Stoke's predictor
+Using a linear model with only Stoke's predictor, we see that the predictor is statistically signifcant for an alpha level of `0.01`. We can interpret it's coefficient as for every one point increase in Stoke's number, the `mean` of the final turbulent distribution increases by about `0.015` .
+
+```{r}
+StokesLmVar <- lm(variance ~ St, data = centralTrain)
+summary(StokesLmVar)
+StokesLmSkew <- lm(variance ~ St, data = centralTrain)
+summary(StokesLmSkew)
+StokesLmKurt <- lm(kurtosis ~ St, data = centralTrain)
+summary(StokesLmKurt)
+```
+
+Looking at the summary for a Linear Model predicting the variance of the final distribution with Stoke's Number, we can see that it has essentially no affect on the `variance`, `skewness`, or `kurtosis` of the final system. Overall, this parameter does not seem to have a great impact on the final resulting distribution in general. This can be made clear by visualizing it's relationship:
+
+```{r}
+p1 <- ggplot(data = centralTrain, aes(x = St, y = mean)) + geom_point() + 
+  labs(
+    x = "Stoke's Number",
+    y = "Mean",
+    title = "Relationship between Stoke's Number and the Mean"
+  )
+p2 <- ggplot(data = centralTrain, aes(x = St, y = variance)) + geom_point()+ 
+  labs(
+    x = "Stoke's Number",
+    y = "Variance",
+    title = "Relationship between Stoke's Number and the Variance"
+  )
+p3 <- ggplot(data = centralTrain, aes(x = St, y = skewness)) + geom_point()+ 
+  labs(
+    x = "Stoke's Number",
+    y = "Skewness",
+    title = "Relationship between Stoke's Number and the Skewness"
+  )
+p4 <- ggplot(data = centralTrain, aes(x = St, y = kurtosis)) + geom_point()+ 
+  labs(
+    x = "Stoke's Number",
+    y = "Kurtosis",
+    title = "Relationship between Stoke's Number and Kurtosis"
+  )
+
+(p1 + p2)/(p3 + p4)
+```
+
+### Reynold's Number `Re`
+
+Reynold's Number `Re` in our data is a number that quantifies the initial fluid turbulence of the system.
+
+```{r}
+ReLM <- lm(mean ~ St, data = centralTrain)
+summary(StokesLM)
+```
 
 ## Prediction
 
