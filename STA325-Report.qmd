@@ -18,6 +18,9 @@ library(knitr) # nice output
 library(boot)
 library(patchwork)
 
+```
+
+```{r}
 ggplot2::theme_set(ggplot2::theme_minimal())
 
 train <- read_csv("data/data-train.csv")
@@ -277,8 +280,8 @@ for(i in 1:10){
 #p4 <- plot(cv_error, type = "b", xlab = "Degree (kurtosis, St)")
 ```
 
-```{r}
-(p1 + p2)/(p3+p4)
-```
-
 The optimal degree polynomials for predicting mean, variance, skew, and kurtosis are all 2 for Stokes Number.
+
+## TODO:
+
+Splines, (Natural, Cubic...), Tree based model
