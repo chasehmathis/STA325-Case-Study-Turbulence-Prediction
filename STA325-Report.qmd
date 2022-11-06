@@ -1,6 +1,6 @@
 ---
 title: "STA325 Case Study"
-author: "Chase Mathis"
+author: "Chase Mathis, Dillan Sant"
 format: html
 execute: 
   warning: false
@@ -141,6 +141,8 @@ poly_kurt <- lm(kurtosis ~ poly(St, 2) + Re + Fr, data = centralTrain)
 mse_poly_kurt <- sum(resid(poly_kurt)^2)/nrow(centralTrain)
 ```
 
+Using 2nd degree polynomial models while also predicting the moments with Froud's and Reynolds' Numnbers, we get lower MSE's for all four moments, however these MSEs are still outrageously high for skew and kurtosis, indicating that using polynomials would also not be the best way of predicting the moments.
+
 ## Inference
 
 ### Stokes Number `St`
@@ -150,7 +152,6 @@ Stoke's Number quantifies the particle's characteristics i.e. it's size and dens
 ```{r}
 StokesLMMean <- lm(mean ~ St, data = centralTrain)
 summary(StokesLMMean)$coefficients
-
 ```
 
 Using a linear model with only Stoke's predictor, we see that the predictor is statistically signifcant for an alpha level of `0.01`. We can interpret it's coefficient as for every one point increase in Stoke's number, the `mean` of the final turbulent distribution increases by about `0.015` .
@@ -209,9 +210,18 @@ summary(Re_LM_Mean)
 ## Evaluating Our Models
 
 ```{r}
-ModelMetricsMoment1 <- tribble(~ModelType, ~MSE,
-                        "Linear Regression", 0)
-#ModelMetricsMoment2
+(ModelMetricsMoment1 <- tribble(~ModelType, ~MSE,
+                        "Linear Regression", MSE_SLR_Mean,
+                        "2nd Degree Polynomial", mse_poly_mean))
+(ModelMetricsMoment2 <- tribble(~ModelType, ~MSE,
+                        "Linear Regression", MSE_SLR_Var,
+                        "2nd Degree Polynomial", mse_poly_var))
+(ModelMetricsMoment3 <- tribble(~ModelType, ~MSE,
+                        "Linear Regression", MSE_SLR_Skew,
+                        "2nd Degree Polynomial", mse_poly_skew))
+(ModelMetricsMoment4 <- tribble(~ModelType, ~MSE,
+                        "Linear Regression", MSE_SLR_Kurt,
+                        "2nd Degree Polynomial", mse_poly_kurt))
 ```
 
 ```{r, warning = FALSE}
