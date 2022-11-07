@@ -350,15 +350,11 @@
 <section id="more-details" class="slide level2">
 <h2>More Details</h2>
 <ul>
-<li><p>Cross Validation:</p>
+<li>While cross-validation is a common technique to estimate the true test-error, we believe that it would be too computationally expensive to fit many different folds of all of the models we wish to predict.</li>
+<li>No Ridge and Lasso Regression?
 <ul>
-<li><p>While cross-validation is a common technique to estimate the true test-error, we believe that it would be too computationally expensive to fit many different folds of all of the models we wish to predict.</p></li>
-<li><p>This is a shortcoming, and provides for future investigation.</p></li>
-</ul></li>
-<li><p>No Ridge and Lasso Regression?</p>
-<ul>
-<li><p>As there are only three input variables, we will stay away from methods which penalize models with high numbers of correlated predictors i.e.&nbsp;(lasso/ridge regression).</p></li>
-<li><p>Our model is already sparse so there is there is no need to make it more sparse and there is low risk that the predictors are highly correlated.</p></li>
+<li>As there are only three input variables, we will stay away from methods which penalize models with high numbers of correlated predictors i.e.&nbsp;(lasso/ridge regression).</li>
+<li>Our model is already sparse so there is there is no need to make it more sparse and there is low risk that the predictors are highly correlated.</li>
 </ul></li>
 </ul>
 <div class="cell">
@@ -503,11 +499,37 @@
 </section>
 <section id="trees" class="slide level2">
 <h2>Trees</h2>
-<p>Finally, we construct a tree-based model and a boosted model.</p>
+<ul>
+<li><p>Finally, we construct a tree-based model and a boosted model.</p></li>
+<li><p>We tested whether pruning our tree would help predictive performance, but found that it did not.</p></li>
+<li><p>Therefore, we left all our trees as fully grown trees.</p></li>
+</ul>
 <div class="cell">
 
 </div>
-<p>We tested whether pruning our tree would help predictive performance, but found that it did not. Therefore, we left all our trees as fully grown trees.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table>
+<caption>Mean Squared Error using Tree Based Model</caption>
+<thead>
+<tr class="header">
+<th style="text-align: right;">Mean</th>
+<th style="text-align: right;">Variance</th>
+<th style="text-align: right;">Skewness</th>
+<th style="text-align: right;">Kurtosis</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1.42e-05</td>
+<td style="text-align: right;">2297.679</td>
+<td style="text-align: right;">229601088860</td>
+<td style="text-align: right;">2.237499e+19</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <div class="cell">
 
 </div>
@@ -688,14 +710,12 @@
 <li>Scientifically, this makes logical sense because higher fluid turbulence would cause the particles to interact more and draw more closely to the mean, ultimately decreasing the skew and variance of the distribution.</li>
 </ul>
 </section>
-<section id="conclusion" class="slide level2">
-<h2>Conclusion</h2>
-<h4 id="future-investigations">Future Investigations</h4>
+<section id="conclusion---future-investigations" class="slide level2">
+<h2>Conclusion - Future Investigations</h2>
 <ul>
-<li><p>This short report briefly investigated “the most important unsolved problem of classical physics”, and because of its brevity most likely did not add anything significant to field of turbulence.</p></li>
-<li><p>Yet, it did open the researchers mind into what can and should be explored in this field’s cross with machine learning.</p></li>
-<li><p>If possible it would be helpful to see the relationship between Froude’s and Reynold’s number when it is continuous like Stoke’s number.</p></li>
-<li><p>In addition, it would be interesting to measure the particle distribution in a different fashion than it’s moments. What if we took a picture of the particles and used Constitutional Neural Networks?</p></li>
+<li>This report briefly investigated “the most important unsolved problem of classical physics”, and due to its brevity most likely did not add anything significant to field of turbulence.</li>
+<li>If possible it would be helpful to see the relationship between Froude’s and Reynold’s number when it is continuous like Stoke’s number.</li>
+<li>In addition, it would be interesting to measure the particle distribution in a different fashion than it’s moments. What if we took a picture of the particles and used Constitutional Neural Networks?</li>
 </ul>
 <div class="footer footer-default">
 

@@ -66,15 +66,9 @@ We are given `r nrow(train) + nrow(test) + nrow(validation)` data points, but we
 
 ## More Details
 
--   Cross Validation:
-    -   While cross-validation is a common technique to estimate the true test-error, we believe that it would be too computationally expensive to fit many different folds of all of the models we wish to predict.
-
-    -   This is a shortcoming, and provides for future investigation.
-
+-   While cross-validation is a common technique to estimate the true test-error, we believe that it would be too computationally expensive to fit many different folds of all of the models we wish to predict.
 -   No Ridge and Lasso Regression?
-
     -   As there are only three input variables, we will stay away from methods which penalize models with high numbers of correlated predictors i.e. (lasso/ridge regression).
-
     -   Our model is already sparse so there is there is no need to make it more sparse and there is low risk that the predictors are highly correlated.
 
 ```{r}
@@ -278,7 +272,11 @@ PolyModelMetrics |>
 
 ## Trees
 
-Finally, we construct a tree-based model and a boosted model.
+-   Finally, we construct a tree-based model and a boosted model.
+
+-   We tested whether pruning our tree would help predictive performance, but found that it did not.
+
+-   Therefore, we left all our trees as fully grown trees.
 
 ```{r}
 tree_mean <- tree(mean ~ St + Fr + Re, data = centralTrain)
@@ -301,7 +299,12 @@ MSE_Tree_kurt <- sum((yhat - centralVal$kurtosis)^2)/nrow(centralVal)
 
 ```
 
-We tested whether pruning our tree would help predictive performance, but found that it did not. Therefore, we left all our trees as fully grown trees.
+```{r}
+PolyModelMetrics <- tribble(~Mean, ~Variance, ~Skewness, ~Kurtosis,
+                           MSE_Tree_mean, MSE_Tree_var, MSE_Tree_skew, MSE_Tree_kurt)
+PolyModelMetrics |> 
+  kable(caption = "Mean Squared Error using Tree Based Model")
+```
 
 ```{r}
 library(gbm)
@@ -402,17 +405,11 @@ ModelMetricsMoment4 %>% kable(digits = 2, caption = "Variance Model Error")
 
 -   Using the Linear Regression model with all three input variables, we see that their linear relationships are statistically significant implying their relationship with the response variable is linear.
 -   Some interesting findings include:
-  -   Medium/high turbulence is associated with lower variance and skewness of the particle clustering distribution.
-  -   Scientifically, this makes logical sense because higher fluid turbulence would cause the particles to interact more and draw more closely to the mean, ultimately decreasing the skew and variance of the distribution.
+-   Medium/high turbulence is associated with lower variance and skewness of the particle clustering distribution.
+-   Scientifically, this makes logical sense because higher fluid turbulence would cause the particles to interact more and draw more closely to the mean, ultimately decreasing the skew and variance of the distribution.
 
-## Conclusion
+## Conclusion - Future Investigations
 
-#### Future Investigations
-
--   This short report briefly investigated "the most important unsolved problem of classical physics", and because of its brevity most likely did not add anything significant to field of turbulence.
-
--   Yet, it did open the researchers mind into what can and should be explored in this field's cross with machine learning.
-
+-   This report briefly investigated "the most important unsolved problem of classical physics", and due to its brevity most likely did not add anything significant to field of turbulence.
 -   If possible it would be helpful to see the relationship between Froude's and Reynold's number when it is continuous like Stoke's number.
-
 -   In addition, it would be interesting to measure the particle distribution in a different fashion than it's moments. What if we took a picture of the particles and used Constitutional Neural Networks?
