@@ -365,16 +365,13 @@ ModelMetricsMoment4 <- tribble(~ModelType, ~MSE,
                         "2nd Degree Polynomial", MSE_Poly_Kurt,
                         "Interaction Effects", MSE_Inter_Kurt,
                         "Tree Based Model", MSE_Tree_kurt,
-<<<<<<< Updated upstream
+
                         "Boosted Model", MSE_Boost_kurt) 
 ```
-=======
+
                         "Boosted Model", MSE_Boost_kurt)
-ModelMetricsMoment1 %>% kable(digits = 6, caption = "Mean")
-ModelMetricsMoment2 %>% kable(digits = 2, caption = "Variance")
-ModelMetricsMoment3 %>% kable(digits = 2, caption = "Skew")
-ModelMetricsMoment4 %>% kable(digits = 2, caption = "Kurtosis")
->>>>>>> Stashed changes
+
+ModelMetricsMoment1 %\>% kable(digits = 6, caption = "Mean") ModelMetricsMoment2 %\>% kable(digits = 2, caption = "Variance") ModelMetricsMoment3 %\>% kable(digits = 2, caption = "Skew") ModelMetricsMoment4 %\>% kable(digits = 2, caption = "Kurtosis")
 
 ```{r}
 results <- c(ModelMetricsMoment1 |> arrange(MSE) |> slice(1) |> pull(ModelType),
@@ -385,3 +382,33 @@ results
 ```
 
 Our final results of the MSE for each model for all of the four moments leads us to selecting the tree-based model. This is the model that has the lowest MSE for `mean`, `variance`, `skew`, and `kurtosis`. The tree-based model makes for interpretable model for a tricky set of data which included only one quantitative predictor (Stokes number) and two factor variables (Reynolds number and Frouds number). While the data supports us using a tree-based model, we understand that there comes some uncertainty with this model selection. We randomly sampled a validation set to test our error and if we sampled a different batch of data, a different model may have predicted better.
+
+## Conclusion
+
+### Investigating Relationships
+::: {layout-nrow="2"}
+```{r}
+plot(tree_mean)
+title("Fully Grown Tree Model for Mean")
+text(tree_mean)
+```
+
+```{r}
+plot(tree_var)
+title("Fully Grown Tree Model for Variance")
+text(tree_var)
+
+```
+
+```{r}
+plot(tree_skew)
+title("Fully Grown Tree Model for Skewness")
+text(tree_skew)
+```
+
+```{r}
+plot(tree_kurt)
+title("Fully Grown Tree Model for Kurtosis")
+text(tree_kurt)
+```
+:::
