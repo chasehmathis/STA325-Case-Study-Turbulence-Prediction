@@ -457,9 +457,8 @@ For each response variable, the input variables have a different effect if we ex
 
     -   Moving from a low Froude number to a medium or infinite Froude number, we expect the skew of the spatial distribution to decrease as well. However, we expect the decrease to be greater moving from low to medium Fr than from low to infinite Fr.
 
-```{=html}
 <!-- -->
-```
+
 -   Kurtosis
     -   We see practically the same relationships between each of St, Re, and Fr with kurtosis as we did with skew:
 
