@@ -523,8 +523,8 @@
 </div>
 </div>
 <ul>
-<li><p>Using our validation set hold out we can report the different MSE for different types of models</p></li>
-<li><p>Across the board, however, Tree Based Model predicted the best on the validation set</p></li>
+<li>Using our validation set hold out we can report the different MSE for different types of models</li>
+<li>Across the board, however, Tree Based Model predicted the best on the validation set</li>
 </ul>
 </section>
 <section id="mean-model" class="slide level2">
@@ -541,24 +541,24 @@
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">Tree Based Model</td>
-<td style="text-align: right;">0.000014</td>
+<td style="text-align: left;">Linear Regression</td>
+<td style="text-align: right;">0.000248</td>
 </tr>
 <tr class="even">
+<td style="text-align: left;">2nd Degree Polynomial</td>
+<td style="text-align: right;">0.000253</td>
+</tr>
+<tr class="odd">
 <td style="text-align: left;">Interaction Effects</td>
 <td style="text-align: right;">0.000030</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Tree Based Model</td>
+<td style="text-align: right;">0.000014</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Boosted Model</td>
 <td style="text-align: right;">0.000163</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Linear Regression</td>
-<td style="text-align: right;">0.000248</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">2nd Degree Polynomial</td>
-<td style="text-align: right;">0.000253</td>
 </tr>
 </tbody>
 </table>
@@ -579,24 +579,24 @@
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">Tree Based Model</td>
-<td style="text-align: right;">2297.68</td>
+<td style="text-align: left;">Linear Regression</td>
+<td style="text-align: right;">33003.25</td>
 </tr>
 <tr class="even">
+<td style="text-align: left;">2nd Degree Polynomial</td>
+<td style="text-align: right;">35219.99</td>
+</tr>
+<tr class="odd">
 <td style="text-align: left;">Interaction Effects</td>
 <td style="text-align: right;">9020.97</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Tree Based Model</td>
+<td style="text-align: right;">2297.68</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Boosted Model</td>
 <td style="text-align: right;">19311.89</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Linear Regression</td>
-<td style="text-align: right;">33003.25</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">2nd Degree Polynomial</td>
-<td style="text-align: right;">35219.99</td>
 </tr>
 </tbody>
 </table>
@@ -617,24 +617,24 @@
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">Tree Based Model</td>
-<td style="text-align: right;">2.296011e+11</td>
+<td style="text-align: left;">Linear Regression</td>
+<td style="text-align: right;">2.128693e+12</td>
 </tr>
 <tr class="even">
+<td style="text-align: left;">2nd Degree Polynomial</td>
+<td style="text-align: right;">2.390292e+12</td>
+</tr>
+<tr class="odd">
 <td style="text-align: left;">Interaction Effects</td>
 <td style="text-align: right;">7.797398e+11</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Tree Based Model</td>
+<td style="text-align: right;">2.296011e+11</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Boosted Model</td>
 <td style="text-align: right;">1.596803e+12</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Linear Regression</td>
-<td style="text-align: right;">2.128693e+12</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">2nd Degree Polynomial</td>
-<td style="text-align: right;">2.390292e+12</td>
 </tr>
 </tbody>
 </table>
@@ -655,24 +655,24 @@
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">Tree Based Model</td>
-<td style="text-align: right;">2.237499e+19</td>
+<td style="text-align: left;">Linear Regression</td>
+<td style="text-align: right;">1.537524e+20</td>
 </tr>
 <tr class="even">
+<td style="text-align: left;">2nd Degree Polynomial</td>
+<td style="text-align: right;">1.644865e+20</td>
+</tr>
+<tr class="odd">
 <td style="text-align: left;">Interaction Effects</td>
 <td style="text-align: right;">6.510998e+19</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Tree Based Model</td>
+<td style="text-align: right;">2.237499e+19</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Boosted Model</td>
 <td style="text-align: right;">1.106086e+20</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Linear Regression</td>
-<td style="text-align: right;">1.537524e+20</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">2nd Degree Polynomial</td>
-<td style="text-align: right;">1.644865e+20</td>
 </tr>
 </tbody>
 </table>
@@ -682,14 +682,10 @@
 <section id="results-investigating-relationships" class="slide level2">
 <h2>Results: Investigating Relationships</h2>
 <ul>
-<li><p>Using the Linear Regression model with all three input variables, we see that their linear relationships are statistically significant implying their relationship with the response variable is linear.</p></li>
-<li><p>Some interesting findings include:</p>
-<ul>
-<li><p>Medium/high turbulence is associated with lower variance and skewness of the particle clustering distribution.</p>
-<ul>
+<li>Using the Linear Regression model with all three input variables, we see that their linear relationships are statistically significant implying their relationship with the response variable is linear.</li>
+<li>Some interesting findings include:</li>
+<li>Medium/high turbulence is associated with lower variance and skewness of the particle clustering distribution.</li>
 <li>Scientifically, this makes logical sense because higher fluid turbulence would cause the particles to interact more and draw more closely to the mean, ultimately decreasing the skew and variance of the distribution.</li>
-</ul></li>
-</ul></li>
 </ul>
 </section>
 <section id="conclusion" class="slide level2">
