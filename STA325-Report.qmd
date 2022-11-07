@@ -37,6 +37,7 @@ ggplot2::theme_set(ggplot2::theme_minimal())
 train <- read_csv("data/data-train.csv")
 test <- read_csv("data/data-test.csv")
 #make a validation set for comparing models
+set.seed(123)
 split <- initial_split(train)
 train <- training(split)
 validation <- testing(split)
@@ -299,7 +300,7 @@ ModelMetricsMoment1 <- tribble(~ModelType, ~MSE,
                         "Linear Regression", MSE_SLR_Mean,
                         "2nd Degree Polynomial", MSE_Poly_Mean,
                         "Interaction Effects", MSE_Inter_Mean,
-                        "Simple Tree Model", MSE_Tree_mean,
+                        "Tree Based Model", MSE_Tree_mean,
                         "Boosted Model", MSE_Boost_mean) 
 ModelMetricsMoment2 <- tribble(~ModelType, ~MSE,
                         "Linear Regression", MSE_SLR_Var,
