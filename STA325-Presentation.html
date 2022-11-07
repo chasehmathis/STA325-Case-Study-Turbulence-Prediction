@@ -390,7 +390,27 @@
 </section>
 <section id="polynomials" class="slide level2">
 <h2>Polynomials</h2>
-<p>We conducted cross-validation to determine the best fitting degree-polynomial for Stokes number. Our chosen polynomial models will include some degree polynomial of Stokes number, while adding Froude and Reynolds number as well. Since these variables are factors, we cannot make them polynomials, however, we still include these variables in our model since we decided against sparse models since we only start with three predictors, and all three predictors have a significant effect on the first four moments of particle cluster volume.</p>
+<ul>
+<li>Conducted cross-validation to determine the best fitting degree-polynomial for Stokes number</li>
+<li>Fr and Re are factors (cannot be polynomials)</li>
+<li>Still include Fr and Re; avoid sparse models</li>
+</ul>
+
+<img data-src="STA325-Presentation_files/figure-revealjs/unnamed-chunk-7-1.png" width="960" class="r-stretch"></section>
+<section id="polynomials-1" class="slide level2">
+<h2>Polynomials</h2>
+
+<img data-src="STA325-Presentation_files/figure-revealjs/unnamed-chunk-8-1.png" width="960" class="r-stretch"></section>
+<section id="polynomials-2" class="slide level2">
+<h2>Polynomials</h2>
+
+<img data-src="STA325-Presentation_files/figure-revealjs/unnamed-chunk-9-1.png" width="960" class="r-stretch"></section>
+<section id="polynomials-3" class="slide level2">
+<h2>Polynomials</h2>
+
+<img data-src="STA325-Presentation_files/figure-revealjs/unnamed-chunk-10-1.png" width="960" class="r-stretch"></section>
+<section id="polynomials-4" class="slide level2">
+<h2>Polynomials</h2>
 <div class="cell">
 
 </div>
@@ -403,27 +423,70 @@
 <div class="cell">
 
 </div>
-<p>The optimal degree polynomials for predicting mean, variance, skew, and kurtosis are all 2 for Stokes Number.</p>
 <div class="cell">
-
+<div class="cell-output-display">
+<table>
+<caption>Mean Squared Error using 2nd Degree Polynomials</caption>
+<thead>
+<tr class="header">
+<th style="text-align: right;">Mean</th>
+<th style="text-align: right;">Variance</th>
+<th style="text-align: right;">Skewness</th>
+<th style="text-align: right;">Kurtosis</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">0.0002528</td>
+<td style="text-align: right;">35219.99</td>
+<td style="text-align: right;">2.390292e+12</td>
+<td style="text-align: right;">1.644865e+20</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div class="cell">
-
 </div>
-<div class="cell">
-
-</div>
-<div class="cell">
-
-</div>
-<p>Using 2nd degree polynomial models while also predicting the moments with Froude and Reynolds numbers, we get lower MSEs for all four moments, however these MSEs are still relatively high, indicating that using polynomials would also not be the best way of predicting the moments.</p>
+<ul>
+<li>The optimal degree polynomials for predicting mean, variance, skew, and kurtosis are all 2 for Stokes Number.</li>
+<li>Lower MSEs than SLR</li>
+</ul>
 </section>
 <section id="interaction-effects" class="slide level2">
 <h2>Interaction Effects</h2>
-<p>We check to see if there are significant interaction effects between the three predictors, and then construct a model with these interaction effects. We expect there to be significant interaction effects between the three predictors due to the similarity between the three numbers. For example, we expect Reynolds number (fluid turbulence) to have some relationship with Frouds number (gravitational acceleration).</p>
+<ul>
+<li>Check for interaction effects between Re, Fr, and St</li>
+<li>Expect a relationship between predictors (ex. fluid turbulence and gravitational acceleration)</li>
+</ul>
 <div class="cell">
 
 </div>
+<div class="cell">
+<div class="cell-output-display">
+<table>
+<caption>Mean Squared Error using Interaction Effects</caption>
+<thead>
+<tr class="header">
+<th style="text-align: right;">Mean</th>
+<th style="text-align: right;">Variance</th>
+<th style="text-align: right;">Skewness</th>
+<th style="text-align: right;">Kurtosis</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">3.02e-05</td>
+<td style="text-align: right;">9020.971</td>
+<td style="text-align: right;">779739846734</td>
+<td style="text-align: right;">6.510998e+19</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<ul>
+<li>All interaction effects between Re, Fr, and St selected</li>
+<li>Lower MSEs than both linear and polynomial models</li>
+</ul>
 </section>
 <section id="trees" class="slide level2">
 <h2>Trees</h2>

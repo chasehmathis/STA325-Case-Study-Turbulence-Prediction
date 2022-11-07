@@ -147,18 +147,21 @@ It is clear looking at the MSEs of the moment that the using a Simple Linear Reg
 
 ## Polynomials
 
-We conducted cross-validation to determine the best fitting degree-polynomial for Stokes number. Our chosen polynomial models will include some degree polynomial of Stokes number, while adding Froude and Reynolds number as well. Since these variables are factors, we cannot make them polynomials, however, we still include these variables in our model since we decided against sparse models since we only start with three predictors, and all three predictors have a significant effect on the first four moments of particle cluster volume.
+- Conducted cross-validation to determine the best fitting degree-polynomial for Stokes number
+- Fr and Re are factors (cannot be polynomials)
+- Still include Fr and Re; avoid sparse models
 
 ```{r, warning = FALSE}
-set.seed(1)
+set.seed(12)
 cv_error <- rep(0,10)
 for(i in 1:10){
   fit <- glm(mean ~ poly(St, i, raw = TRUE), data = centralTrain)
   cv_error[i] <- cv.glm(centralTrain, fit, K = 10)$delta[1]
 }
-#p1 <- plot(cv_error, type = "b", xlab = "Degree (mean, St)")
+plot(cv_error, type = "b", xlab = "Degree (mean, St)")
 ```
 
+## Polynomials
 ```{r, warning = FALSE}
 set.seed(1)
 cv_error <- rep(0,10)
@@ -166,8 +169,11 @@ for(i in 1:10){
   fit <- glm(variance ~ poly(St, i, raw = TRUE), data = centralTrain)
   cv_error[i] <- cv.glm(centralTrain, fit, K = 10)$delta[1]
 }
-#p2 <- plot(cv_error, type = "b", xlab = "Degree (variance, St)")
+plot(cv_error, type = "b", xlab = "Degree (variance, St)")
 ```
+
+
+## Polynomials
 
 ```{r, warning = FALSE}
 set.seed(1)
@@ -176,8 +182,10 @@ for(i in 1:10){
   fit <- glm(skewness ~ poly(St, i, raw = TRUE), data = centralTrain)
   cv_error[i] <- cv.glm(centralTrain, fit, K = 10)$delta[1]
 }
-#p3 <- plot(cv_error, type = "b", xlab = "Degree (skewness, St)")
+plot(cv_error, type = "b", xlab = "Degree (skewness, St)")
 ```
+
+## Polynomials
 
 ```{r, warning = FALSE}
 set.seed(1)
@@ -186,12 +194,10 @@ for(i in 1:10){
   fit <- glm(kurtosis ~ poly(St, i, raw = TRUE), data = centralTrain)
   cv_error[i] <- cv.glm(centralTrain, fit, K = 10)$delta[1]
 }
-#p4 <- plot(cv_error, type = "b", xlab = "Degree (kurtosis, St)")
-
-
+plot(cv_error, type = "b", xlab = "Degree (kurtosis, St)")
 ```
 
-The optimal degree polynomials for predicting mean, variance, skew, and kurtosis are all 2 for Stokes Number.
+## Polynomials
 
 ```{r}
 poly_mean <- lm(mean ~ poly(St, 2) + Re + Fr, data = centralTrain)
@@ -215,15 +221,27 @@ MSE_Poly_Skew <- sum((yhat - centralVal$skewness)^2)/nrow(centralVal)
 poly_kurt <- lm(kurtosis ~ poly(St, 2) + Re + Fr, data = centralTrain)
 yhat <- predict(poly_kurt, newdata = centralVal)
 MSE_Poly_Kurt <- sum((yhat - centralVal$kurtosis)^2)/nrow(centralVal)
-
-
 ```
 
-Using 2nd degree polynomial models while also predicting the moments with Froude and Reynolds numbers, we get lower MSEs for all four moments, however these MSEs are still relatively high, indicating that using polynomials would also not be the best way of predicting the moments.
+```{r}
+PolyModelMetrics <- tribble(~Mean, ~Variance, ~Skewness, ~Kurtosis,
+                           MSE_Poly_Mean, MSE_Poly_Var, MSE_Poly_Skew, MSE_Poly_Kurt)
+PolyModelMetrics |> 
+  kable(caption = "Mean Squared Error using 2nd Degree Polynomials")
+```
+
+
+
+- The optimal degree polynomials for predicting mean, variance, skew, and kurtosis are all 2 for Stokes Number.
+- Lower MSEs than SLR
+
+
+
 
 ## Interaction Effects
 
-We check to see if there are significant interaction effects between the three predictors, and then construct a model with these interaction effects. We expect there to be significant interaction effects between the three predictors due to the similarity between the three numbers. For example, we expect Reynolds number (fluid turbulence) to have some relationship with Frouds number (gravitational acceleration).
+- Check for interaction effects between Re, Fr, and St
+- Expect a relationship between predictors (ex. fluid turbulence and gravitational acceleration)
 
 ```{r}
 inter_fit_mean <- lm(mean ~ (Re + Fr + St)^2, data = centralTrain)
@@ -244,6 +262,17 @@ inter_fit_kurt <- lm(kurtosis ~ (Re + Fr + St)^2, data = centralTrain)
 yhat <- predict(inter_fit_kurt, newdata = centralVal)
 MSE_Inter_Kurt <- sum((yhat - centralVal$kurtosis)^2)/nrow(centralVal)
 ```
+
+
+```{r}
+PolyModelMetrics <- tribble(~Mean, ~Variance, ~Skewness, ~Kurtosis,
+                           MSE_Inter_Mean, MSE_Inter_Var, MSE_Inter_Skew, MSE_Inter_Kurt)
+PolyModelMetrics |> 
+  kable(caption = "Mean Squared Error using Interaction Effects")
+```
+
+- All interaction effects between Re, Fr, and St selected
+- Lower MSEs than both linear and polynomial models
 
 ## Trees
 
@@ -303,7 +332,6 @@ MSE_Boost_kurt <- sum((yhat - centralVal$kurtosis)^2)/nrow(centralVal)
 ```
 
 ## Results: Evaluating Our Model
-
 
 ```{r}
 #| echo: false
@@ -388,5 +416,3 @@ For each response variable, the input variables have a different effect if we ex
 #### Future Investigations
 
 This short report briefly investigated "the most important unsolved problem of classical physics", and because of its brevity most likely did not add anything significant to field of turbulence. Yet, it did open the researchers mind into what can and should be explored in this field's cross with machine learning. It is important to find a good predictive model to ease the burden of the computationally expensive numeric solvers which output the data. However, if possible it would be helpful to see the relationship between Froude's and Reynold's number when it is continuous like Stoke's number. It is difficult to only have three different values for Froude's number and Reynold's number, especially when one is `Inf`.
-
-
