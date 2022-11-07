@@ -1,7 +1,7 @@
 ---
 title: "STA325 Case Study"
 author: "Chase Mathis, Dillan Sant"
-format: html
+format: pdf
 execute: 
   warning: false
   echo: false
@@ -320,7 +320,7 @@ yhat <- predict(boost_kurt, newdata = centralVal, n.trees = 5000)
 MSE_Boost_kurt <- sum((yhat - centralVal$kurtosis)^2)/nrow(centralVal)
 ```
 
-## Evaluating Our Models
+## Results: Evaluating Our Model & Investigating Relationsips
 
 ```{r}
 #| echo: false
@@ -348,11 +348,14 @@ ModelMetricsMoment4 <- tribble(~ModelType, ~MSE,
                         "Interaction Effects", MSE_Inter_Kurt,
                         "Tree Based Model", MSE_Tree_kurt,
                         "Boosted Model", MSE_Boost_kurt) 
+```
 
-ModelMetricsMoment1 |> arrange(MSE) |> slice(1) |> pull(ModelType)
-ModelMetricsMoment2 |> arrange(MSE) |> slice(1) |> pull(ModelType)
-ModelMetricsMoment3 |> arrange(MSE) |> slice(1) |> pull(ModelType)
-ModelMetricsMoment4 |> arrange(MSE) |> slice(1) |> pull(ModelType)
+```{r}
+results <- c(ModelMetricsMoment1 |> arrange(MSE) |> slice(1) |> pull(ModelType),
+             ModelMetricsMoment2 |> arrange(MSE) |> slice(1) |> pull(ModelType),
+             ModelMetricsMoment3 |> arrange(MSE) |> slice(1) |> pull(ModelType),
+             ModelMetricsMoment4 |> arrange(MSE) |> slice(1) |> pull(ModelType))
+results
 ```
 
 The final model selected for predicting all four moments is our tree-based model. This is the model that has the lowest MSE for `mean`, `variance`, `skew`, and `kurtosis`. The tree-based model makes for interpretable model for a tricky set of data which included only one quantitative predictor (Stokes number) and two factor variables (Reynolds number and Frouds number). While the data supports us using a tree-based model, we understand that there comes some uncertainty with this model selection. We randomly sampled a validation set to test our error and if we sampled a different batch of data, a different model may have predicted better.
