@@ -8,7 +8,9 @@ execute:
 editor: visual
 ---
 
-## 
+## Introduction
+
+## Methodology
 
 ```{r}
 #| echo: false
@@ -35,7 +37,7 @@ centralTrain <- train |>
   select(-contains("R_"))
 ```
 
-#### Quick Input Variables Transformations
+#### Quick Transformations for our Input Variables
 
 ```{r}
 centralTrain |> 
@@ -63,74 +65,6 @@ centralTrain <- centralTrain %>%
 
 
 ```
-
-## Inference
-
-### Stokes Number `St`
-
-Stoke's Number quantifies the particle's characteristics i.e. it's size and density. Let's see how this parameter effects the distribution of the final turbulent space. If we look at some visualizations, we can see it has a rather weak association with the output variables:
-
-```{r}
-p1 <- ggplot(data = centralTrain, aes(x = St, y = mean)) + geom_point() + 
-  labs(
-    x = "Stoke's Number",
-    y = "Mean"
-  )
-p2 <- ggplot(data = centralTrain, aes(x = St, y = variance)) + geom_point()+ 
-  labs(
-    x = "Stoke's Number",
-    y = "Variance"
-  )
-p3 <- ggplot(data = centralTrain, aes(x = St, y = skewness)) + geom_point()+ 
-  labs(
-    x = "Stoke's Number",
-    y = "Skewness"
-  )
-p4 <- ggplot(data = centralTrain, aes(x = St, y = kurtosis)) + geom_point()+ 
-  labs(
-    x = "Stoke's Number",
-    y = "Kurtosis"
-  )
-
-(p1 + p2)/(p3 + p4)
-
-```
-
-In fact, when we fit SLR models with it as an input and the respective central moments as the output, none of the relationships come up as statistically significant for an alpha level of `0.01` .
-
-### Reynold's Number `Re`
-
-Reynold's Number, `Re` in our data, is a number that quantifies the initial fluid turbulence of the system.
-
-#### `Mean` Model
-
-```{r}
-Re_LM_Mean <- lm(mean ~ Re, data = centralTrain)
-summary(Re_LM_Mean)$coefficients |> as_tibble() |> 
-  select(Estimate, contains("Pr")) |> 
-  kable()
-```
-
--   `Re` has a statistically significant relationship with the outputting mean of the distribution for each of its levels.
-
--   `Re` has an **inverse** relationship with the mean of the resulting distribution.
-
-#### `Variance` Model
-
-```{r}
-Re_LM_Variance <- lm(variance ~ Re, data = centralTrain)
-summary(Re_LM_Variance)$coefficients |> as_tibble() |> 
-  select(Estimate, contains("Pr")) |> 
-  kable()
-```
-
--   `Re` has a statistically significant relationship with the outputting variance of the distribution for each of its levels.
-
--   It is clear to see that `Re` has an **inverse** relationship with the `variance` of the resulting distribution. In other words, **a higher Reynold's number results in a lower varied distribution.**
-
--   This follows our intuitition that when a gravitational force is higher, clusters will form at a higher rate resulting in a lower variance number.
-
-## Prediction
 
 ### Simple Linear Regression
 
@@ -207,13 +141,9 @@ for(i in 1:10){
   cv_error[i] <- cv.glm(centralTrain, fit, K = 10)$delta[1]
 }
 #p4 <- plot(cv_error, type = "b", xlab = "Degree (kurtosis, St)")
-```
 
-```{r}
-(p1 + p2)/(p3+p4)
+#The optimal degree polynomials for predicting mean, variance, skew, and kurtosis are all 2 for Stokes Number.
 ```
-
-The optimal degree polynomials for predicting mean, variance, skew, and kurtosis are all 2 for Stokes Number.
 
 ```{r}
 poly_mean <- lm(mean ~ poly(St, 2) + Re + Fr, data = centralTrain)
@@ -233,15 +163,15 @@ mse_poly_skew <- sum(resid(poly_skew)^2)/nrow(centralTrain)
 ```{r}
 poly_kurt <- lm(kurtosis ~ poly(St, 2) + Re + Fr, data = centralTrain)
 mse_poly_kurt <- sum(resid(poly_kurt)^2)/nrow(centralTrain)
-```
 
-Using 2nd degree polynomial models while also predicting the moments with Froud's and Reynolds' Numnbers, we get lower MSE's for all four moments, however these MSEs are still outrageously high for skew and kurtosis, indicating that using polynomials would also not be the best way of predicting the moments.
+#Using 2nd degree polynomial models while also predicting the moments with Froud's and Reynolds' Numnbers, we get lower MSE's for all four moments, however these MSEs are still outrageously high for skew and kurtosis, indicating that using polynomials would also not be the best way of predicting the moments.
+```
 
 ### Interaction Effects (to-do)
 
 ```{r}
 inter_fit <- lm(mean ~ (Re + Fr + St)^2, data = centralTrain)
-summary(inter_fit)$coefficients
+summary(inter_fit)
 ```
 
 ### Splines
