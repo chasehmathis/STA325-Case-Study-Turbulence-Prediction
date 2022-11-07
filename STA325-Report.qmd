@@ -254,37 +254,49 @@ MSE_Inter_Kurt <- sum((yhat - centralVal$kurtosis)^2)/nrow(centralVal)
 tree_mean <- tree(mean ~ St + Fr + Re, data = centralTrain)
 yhat <- predict(tree_mean, newdata = centralVal)
 MSE_Tree_mean <- sum((yhat - centralVal$mean)^2)/nrow(centralVal)
-plot(tree_mean)
-title("Fully Grown Tree Model for Mean")
-text(tree_mean)
-
 
 tree_var <- tree(variance ~ St + Fr + Re, data = centralTrain)
 yhat <- predict(tree_var, newdata = centralVal)
 MSE_Tree_var <- sum((yhat - centralVal$variance)^2)/nrow(centralVal)
-plot(tree_var)
-title("Fully Grown Tree Model for Variance")
-text(tree_var)
 
 
 tree_skew <- tree(skewness ~ St + Fr + Re, data = centralTrain)
 yhat <- predict(tree_skew, newdata = centralVal)
 MSE_Tree_skew <- sum((yhat - centralVal$skewness)^2)/nrow(centralVal)
-plot(tree_skew)
-title("Fully Grown Tree Model for Skewness")
-text(tree_skew)
-
 
 
 tree_kurt <- tree(kurtosis ~ St + Fr + Re, data = centralTrain)
 yhat <- predict(tree_kurt, newdata = centralVal)
 MSE_Tree_kurt <- sum((yhat - centralVal$kurtosis)^2)/nrow(centralVal)
+
+```
+
+::: {layout-nrow="2"}
+```{r}
+plot(tree_mean)
+title("Fully Grown Tree Model for Mean")
+text(tree_mean)
+```
+
+```{r}
+plot(tree_var)
+title("Fully Grown Tree Model for Variance")
+text(tree_var)
+
+```
+
+```{r}
+plot(tree_skew)
+title("Fully Grown Tree Model for Skewness")
+text(tree_skew)
+```
+
+```{r}
 plot(tree_kurt)
 title("Fully Grown Tree Model for Kurtosis")
 text(tree_kurt)
-
-
 ```
+:::
 
 We tested whether pruning our tree would help predictive performance, but found that it did not. Therefore, we left all our trees as fully grown trees shown above.
 
