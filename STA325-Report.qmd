@@ -2,7 +2,6 @@
 title: "STA325 Case Study"
 author: "Chase Mathis, Dillan Sant"
 format: pdf
-geometry: margin = 1.5cm
 execute: 
   warning: false
   echo: false
@@ -278,36 +277,7 @@ MSE_Tree_kurt <- sum((yhat - centralVal$kurtosis)^2)/nrow(centralVal)
 
 ```
 
-::: {layout-nrow="2"}
-```{r}
-plot(tree_mean)
-title("Fully Grown Tree Model for Mean")
-text(tree_mean)
-```
-
-```{r}
-plot(tree_var)
-title("Fully Grown Tree Model for Variance")
-text(tree_var)
-
-```
-
-```{r}
-plot(tree_skew)
-title("Fully Grown Tree Model for Skewness")
-text(tree_skew)
-```
-
-```{r}
-plot(tree_kurt)
-title("Fully Grown Tree Model for Kurtosis")
-text(tree_kurt)
-```
-:::
-
-We tested whether pruning our tree would help predictive performance, but found that it did not. Therefore, we left all our trees as fully grown trees shown above.
-
-#### Boosting
+We tested whether pruning our tree would help predictive performance, but found that it did not. Therefore, we left all our trees as fully grown trees.
 
 ```{r}
 library(gbm)
@@ -339,7 +309,7 @@ yhat <- predict(boost_kurt, newdata = centralVal, n.trees = 5000)
 MSE_Boost_kurt <- sum((yhat - centralVal$kurtosis)^2)/nrow(centralVal)
 ```
 
-## Results: Evaluating Our Model & Investigating Relationsips
+## Results: Evaluating Our Model & Investigating Relationships
 
 #### Evaluating Our Model
 
@@ -371,24 +341,6 @@ ModelMetricsMoment4 <- tribble(~ModelType, ~MSE,
                         "Boosted Model", MSE_Boost_kurt)
 ```
 
-::: {layout-nrow="2"}
-```{r}
-ModelMetricsMoment1 %>% kable(digits = 6, caption = "Mean Model Error")
-```
-
-```{r}
-ModelMetricsMoment2 %>% kable(digits = 2, caption = "Variance Model Error")
-```
-
-```{r}
-ModelMetricsMoment3 %>% kable(digits = 2, caption = "Skew Model Error")
-```
-
-```{r}
-ModelMetricsMoment4 %>% kable(digits = 2, caption = "Kurtosis Model Error")
-```
-:::
-
 ```{r}
 results <- c(ModelMetricsMoment1 |> arrange(MSE) |> slice(1) |> pull(ModelType),
              ModelMetricsMoment2 |> arrange(MSE) |> slice(1) |> pull(ModelType),
@@ -399,39 +351,7 @@ results
 
 Our final results of the MSE for each model for all of the four moments leads us to selecting the tree-based model. This is the model that has the lowest MSE for `mean`, `variance`, `skew`, and `kurtosis`. The tree-based model makes for interpretable model for a tricky set of data which included only one quantitative predictor (Stokes number) and two factor variables (Reynolds number and Frouds number). While the data supports us using a tree-based model, we understand that there comes some uncertainty with this model selection. We randomly sampled a validation set to test our error and if we sampled a different batch of data, a different model may have predicted better.
 
-\newpage
-
 #### Investigating Relationships
-
-::: {layout-nrow="2"}
-```{r}
-summary(SLRMean)$coefficients |> 
-  as.data.frame() |> 
-  select(-`Std. Error`, -`t value`) |> 
-  kable(caption = "Mean Regression Model",  digits = 3)
-```
-
-```{r}
-summary(SLRVar)$coefficients |> 
-  as.data.frame() |> 
-  select(-`Std. Error`, -`t value`) |> 
-kable(caption = "Variance Regression Model",  digits = 3)
-```
-
-```{r}
-summary(SLRSkew)$coefficients |> 
-  as.data.frame() |> 
-  select(-`Std. Error`, -`t value`) |> 
-  kable(caption = "Skewness Regression Model",  digits = 3)
-```
-
-```{r}
-summary(SLRKurt)$coefficients |> 
-  as.data.frame() |> 
-  select(-`Std. Error`, -`t value`) |> 
-  kable(caption = "Kurtosis Regression Model",  digits = 3)
-```
-:::
 
 For each response variable, the input variables have a different effect if we examine the regression output. For the:
 
@@ -476,3 +396,90 @@ For each response variable, the input variables have a different effect if we ex
 #### Future Investigations
 
 This short report briefly investigated "the most important unsolved problem of classical physics", and because of its brevity most likely did not add anything significant to field of turbulence. Yet, it did open the researchers mind into what can and should be explored in this field's cross with machine learning. It is important to find a good predictive model to ease the burden of the computationally expensive numeric solvers which output the data. However, if possible it would be helpful to see the relationship between Froude's and Reynold's number when it is continuous like Stoke's number. It is difficult to only have three different values for Froude's number and Reynold's number, especially when one is `Inf`.
+
+## Appendix
+
+### Model Metrics Figure
+
+::: {layout-nrow="2"}
+```{r}
+ModelMetricsMoment1 %>% kable(digits = 6, caption = "Mean Model Error")
+```
+
+```{r}
+ModelMetricsMoment2 %>% kable(digits = 2, caption = "Variance Model Error")
+```
+
+```{r}
+ModelMetricsMoment3 %>% kable(digits = 2, caption = "Skew Model Error")
+```
+
+```{r}
+ModelMetricsMoment4 %>% kable(digits = 2, caption = "Kurtosis Model Error")
+```
+:::
+
+\newpage
+
+### Final Tree Model Plots
+
+::: {layout-nrow="2"}
+```{r}
+plot(tree_mean)
+title("Fully Grown Tree Model for Mean")
+text(tree_mean)
+```
+
+```{r}
+plot(tree_var)
+title("Fully Grown Tree Model for Variance")
+text(tree_var)
+
+```
+
+```{r}
+plot(tree_skew)
+title("Fully Grown Tree Model for Skewness")
+text(tree_skew)
+```
+
+```{r}
+plot(tree_kurt)
+title("Fully Grown Tree Model for Kurtosis")
+text(tree_kurt)
+```
+:::
+
+\newpage
+
+### Simple Linear Regression Coefficients
+
+::: {layout-nrow="2"}
+```{r}
+summary(SLRMean)$coefficients |> 
+  as.data.frame() |> 
+  select(-`Std. Error`, -`t value`) |> 
+  kable(caption = "Mean Regression Model",  digits = 3)
+```
+
+```{r}
+summary(SLRVar)$coefficients |> 
+  as.data.frame() |> 
+  select(-`Std. Error`, -`t value`) |> 
+kable(caption = "Variance Regression Model",  digits = 3)
+```
+
+```{r}
+summary(SLRSkew)$coefficients |> 
+  as.data.frame() |> 
+  select(-`Std. Error`, -`t value`) |> 
+  kable(caption = "Skewness Regression Model",  digits = 3)
+```
+
+```{r}
+summary(SLRKurt)$coefficients |> 
+  as.data.frame() |> 
+  select(-`Std. Error`, -`t value`) |> 
+  kable(caption = "Kurtosis Regression Model",  digits = 3)
+```
+:::
