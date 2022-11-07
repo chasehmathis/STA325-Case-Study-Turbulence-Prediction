@@ -428,7 +428,7 @@ summary(SLRKurt)$coefficients |>
 
 For each response variable, the input variables have a different effect. For the:
 
--   Mean
+-   Means
 
 -   Variance
 
