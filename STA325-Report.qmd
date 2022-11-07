@@ -435,4 +435,22 @@ For each response variable, the input variables have a different effect. For the
 
 -   Skewness
 
+    -   As Stokes number (the particles' size/density) increases, we expect the skew of the spatial distribution and clustering of particles to increase.
+
+    -   As Reynolds number (fluid turbulence) increases from low to medium, low to high, and medium to high, we expect the skew of the spatial distribution and clustering of particles to decrease. Scientifically, this makes logical sense because higher fluid turbulence would cause the particles to interact more and draw more closely to the mean, ultimately decreasing the skew of the distribution.
+
+    -   Moving from a low Froude number to a medium or infinite Froude number, we expect the skew of the spatial distribution to decrease as well. However, we expect the decrease to be greater moving from low to medium Fr than from low to infinite Fr.
+
+```{=html}
+<!-- -->
+```
 -   Kurtosis
+    -   We see practically the same relationships between each of St, Re, and Fr with kurtosis as we did with skew:
+
+        -   As Stokes number increases, we expect the kurtosis of the spatial distribution and clustering of particles to increase.
+
+        -   As Reynolds number increases, we expect the kurtosis to decrease.
+
+        -   We also see the same relationship with Froude number, as we expect the kurtosis of the distribution to decrease when moving from low to infinite Fr, but increase when moving from medium to infinite Fr.
+
+    -   These results are also intuitively logical, since a high Reynolds number will likely cause the particles to be centered closer around the mean, thus the distribution would have less fat tails. The similar, odd relationship between Froude number with both skew and kurtosis could be due to the fact that it is not quite possible to interpret infinite gravitational acceleration and what the repercussions of that would be in terms of the particle clustering distribution.
