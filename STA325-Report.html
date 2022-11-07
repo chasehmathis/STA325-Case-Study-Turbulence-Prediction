@@ -75,13 +75,37 @@ ul.task-list{list-style: none;}
 <section id="quick-transformations-for-our-input-variables" class="level4">
 <h4 class="anchored" data-anchor-id="quick-transformations-for-our-input-variables">Quick Transformations for our Input Variables</h4>
 <div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 3 × 4
-     Re n...2      Fr n...4
-  &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;int&gt;
-1    90    31   0.052    36
-2   224    39   0.3      23
-3   398    19 Inf        30</code></pre>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<thead>
+<tr class="header">
+<th style="text-align: right;">Reynold’s Number</th>
+<th style="text-align: right;">Count</th>
+<th style="text-align: right;">Freyman’s Number</th>
+<th style="text-align: right;">Count</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;">0.052</td>
+<td style="text-align: right;">36</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">224</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">0.300</td>
+<td style="text-align: right;">23</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">398</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">Inf</td>
+<td style="text-align: right;">30</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <p>Reynold’s and Freyman’s numbers are non-continuous as there is only three buckets for the numbers. Therefore I am going to make them a categorical variable to help interpretability.</p>
@@ -89,8 +113,8 @@ ul.task-list{list-style: none;}
 
 </div>
 </section>
-<section id="simple-linear-regression" class="level3">
-<h3 class="anchored" data-anchor-id="simple-linear-regression">Simple Linear Regression</h3>
+<section id="simple-linear-regression-benchmark" class="level3">
+<h3 class="anchored" data-anchor-id="simple-linear-regression-benchmark">Simple Linear Regression Benchmark</h3>
 <div class="cell">
 
 </div>
@@ -155,62 +179,47 @@ ul.task-list{list-style: none;}
 
 </div>
 </section>
-<section id="interaction-effects-to-do" class="level3">
-<h3 class="anchored" data-anchor-id="interaction-effects-to-do">Interaction Effects (to-do)</h3>
+<section id="interaction-effects" class="level3">
+<h3 class="anchored" data-anchor-id="interaction-effects">Interaction Effects</h3>
 <div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Call:
-lm(formula = mean ~ (Re + Fr + St)^2, data = centralTrain)
 
-Residuals:
-       Min         1Q     Median         3Q        Max 
--0.0261390 -0.0016048 -0.0000646  0.0024878  0.0140925 
-
-Coefficients: (1 not defined because of singularities)
-                     Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept)          0.108581   0.002378  45.662  &lt; 2e-16 ***
-ReMedium            -0.103060   0.002987 -34.498  &lt; 2e-16 ***
-ReHigh              -0.106710   0.003603 -29.616  &lt; 2e-16 ***
-FrMedium            -0.035778   0.003540 -10.105 1.05e-15 ***
-FrInfinity          -0.038679   0.003219 -12.015  &lt; 2e-16 ***
-St                   0.024313   0.001744  13.939  &lt; 2e-16 ***
-ReMedium:FrMedium    0.028831   0.003657   7.884 1.84e-11 ***
-ReHigh:FrMedium            NA         NA      NA       NA    
-ReMedium:FrInfinity  0.033657   0.003705   9.084 9.21e-14 ***
-ReHigh:FrInfinity    0.034294   0.004051   8.465 1.41e-12 ***
-ReMedium:St         -0.027400   0.001938 -14.136  &lt; 2e-16 ***
-ReHigh:St           -0.025834   0.002506 -10.309 4.34e-16 ***
-FrMedium:St          0.008944   0.002380   3.759 0.000333 ***
-FrInfinity:St        0.005956   0.001995   2.985 0.003812 ** 
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-Residual standard error: 0.006253 on 76 degrees of freedom
-Multiple R-squared:  0.9892,    Adjusted R-squared:  0.9875 
-F-statistic: 578.6 on 12 and 76 DF,  p-value: &lt; 2.2e-16</code></pre>
-</div>
 </div>
 </section>
-<section id="splines" class="level3">
-<h3 class="anchored" data-anchor-id="splines">Splines</h3>
+<section id="gam-feel-like-no-good-too-many-categorical" class="level3">
+<h3 class="anchored" data-anchor-id="gam-feel-like-no-good-too-many-categorical">GAM ( feel like no good too many categorical?)</h3>
+<div class="cell">
+
+</div>
 </section>
 <section id="trees" class="level3">
 <h3 class="anchored" data-anchor-id="trees">Trees</h3>
+<div class="cell">
+
+</div>
 </section>
-<section id="random-forests" class="level3">
-<h3 class="anchored" data-anchor-id="random-forests">Random Forests</h3>
+<section id="boosting" class="level3">
+<h3 class="anchored" data-anchor-id="boosting">Boosting</h3>
+<div class="cell">
+
+</div>
 </section>
 </section>
 <section id="evaluating-our-models" class="level2">
 <h2 class="anchored" data-anchor-id="evaluating-our-models">Evaluating Our Models</h2>
 <div class="cell">
-
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Boosted Model"</code></pre>
 </div>
-</section>
-<section id="todo" class="level2">
-<h2 class="anchored" data-anchor-id="todo">TODO:</h2>
-<p>Splines, (Natural, Cubic…), Tree based model</p>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Boosted Model"</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Boosted Model"</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Boosted Model"</code></pre>
+</div>
+</div>
 </section>
 
 </main>
