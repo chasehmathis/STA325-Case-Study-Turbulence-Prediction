@@ -10,6 +10,15 @@ editor: visual
 
 ## Introduction
 
+Nobel Prize winning Physicist Richard Feynman said that turbulence was "the most important unsolved problem of classical physics". Although, we still unexpectedly feel bumps on airplines and have trouble truly predicting where a Hurricane will strike land, we hope to add to the field of research studying how to model turbulent systems. We position our research in two key areas:
+
+1.  Prediction
+2.  Statistical Inference
+
+Prediction is important in the context of this problem as data from turbulent systems is very computationally expensive to obtain. Therefore, experiments using data on the evolution turbulent systems need better, quicker, cheaper methods to get data.
+
+Statistical Inference is also important as it can help elucidate the connections between turbulence and initial settings. We hope to build a model that gives clarity on this as well.
+
 ## Methodology
 
 ```{r}
@@ -18,13 +27,19 @@ library(tidyverse) # datawrangling
 library(tidymodels) #modeling steps
 library(knitr) # nice output
 library(boot) # cv
+library(lmvar) # CV
 library(patchwork) # plots
 library(splines)
 library(tree) # trees
+
 ggplot2::theme_set(ggplot2::theme_minimal())
 
 train <- read_csv("data/data-train.csv")
 test <- read_csv("data/data-test.csv")
+#make a validation set for comparing models
+split <- initial_split(train)
+train <- training(split)
+validation <- testing(split)
 ```
 
 ```{r}
@@ -35,8 +50,26 @@ centralTrain <- train |>
          variance = R_moment_2 - R_moment_1^2,
          skewness = R_moment_3 -3*R_moment_1*R_moment_2 + 2*R_moment_1^3,
          kurtosis = R_moment_4 - 4*R_moment_1*R_moment_3 + 6*R_moment_2*R_moment_1^2 - 3*R_moment_1^4) |> 
-  select(-contains("R_"))
+  dplyr::select(-contains("R_"))
+
+centralVal <- validation |> 
+  mutate(mean = R_moment_1,
+         variance = R_moment_2 - R_moment_1^2,
+         skewness = R_moment_3 -3*R_moment_1*R_moment_2 + 2*R_moment_1^3,
+         kurtosis = R_moment_4 - 4*R_moment_1*R_moment_3 + 6*R_moment_2*R_moment_1^2 - 3*R_moment_1^4) |> 
+  dplyr::select(-contains("R_"))
 ```
+
+We are given `r nrow(train) + nrow(test)` data points, but we only use `r nrow(train)` data points for training our model as to not overfit our model. We will examine numerous different types of models including:
+
+-   A simple Linear Regression Model
+-   More Complex Non-Linear Regression Model
+-   Tree Based Model
+-   Boosted Tree Model
+
+The data has `4` response variables and `3` input variables. Each output variable is a raw moment of a final turbulent distribution. We've converted the raw moments to central moments so as for better interpret ability. We keep the first raw moment, however.
+
+As there are only three input variables, we will stray away from methods which look for sparse models. Our model is, already, sparse so there is no need to make it more sparse.
 
 #### Quick Transformations for our Input Variables
 
@@ -65,30 +98,42 @@ centralTrain <- centralTrain %>%
     Re == 90 ~ "Low")) %>%
   mutate(Re = factor(Re, levels = c("Low", "Medium", "High")))
 
+centralVal <- centralVal |> 
+  mutate(Fr = case_when(
+    Fr < 0.3 ~ "Low",
+    Fr == 0.3 ~ "Medium",
+    Fr == Inf ~ "Infinity"
+  )) |> 
+  mutate(Fr = factor(Fr, levels = c("Low", "Medium", "Infinity")))
 
+centralVal <- centralVal %>%
+  mutate(Re = case_when(
+    Re == 398 ~ "High",
+    Re == 224 ~ "Medium",
+    Re == 90 ~ "Low")) %>%
+  mutate(Re = factor(Re, levels = c("Low", "Medium", "High")))
 ```
 
 ### Simple Linear Regression Benchmark
 
 ```{r}
 #| label: Baseline-Model
+
 SLRMean <- lm(mean ~ St + Re + Fr, data = centralTrain)
-MSE_SLR_Mean <- sum(resid(SLRMean)^2)/nrow(centralTrain)
-```
+yhat <- predict(SLRMean, newdata = centralVal)
+MSE_SLR_Mean <- sum((yhat - centralVal$mean)^2)/nrow(centralVal)
 
-```{r}
 SLRVar <- lm(variance ~ St + Re + Fr, data = centralTrain)
-MSE_SLR_Var <- sum(resid(SLRVar)^2)/nrow(centralTrain)
-```
+yhat <- predict(SLRVar, newdata = centralVal)
+MSE_SLR_Var <- sum((yhat - centralVal$variance)^2)/nrow(centralVal)
 
-```{r}
 SLRSkew <- lm(skewness ~ St + Re + Fr, data = centralTrain)
-MSE_SLR_Skew <- sum(resid(SLRSkew)^2)/nrow(centralTrain)
-```
+yhat <- predict(SLRVar, newdata = centralVal)
+MSE_SLR_Skew <- sum((yhat - centralVal$skewness)^2)/nrow(centralVal)
 
-```{r}
 SLRKurt <- lm(kurtosis ~ St + Re + Fr, data = centralTrain)
-MSE_SLR_Kurt <- sum(resid(SLRKurt)^2)/nrow(centralTrain)
+yhat <- predict(SLRKurt, newdata = centralVal)
+MSE_SLR_Kurt <- sum((yhat - centralVal$kurtosis)^2)/nrow(centralVal)
 ```
 
 ```{r}
@@ -96,7 +141,6 @@ MSE_SLR_Kurt <- sum(resid(SLRKurt)^2)/nrow(centralTrain)
 
 SLRModelMetrics <- tribble(~Mean, ~Variance, ~Skewness, ~Kurtosis,
                            MSE_SLR_Mean, MSE_SLR_Var, MSE_SLR_Skew, MSE_SLR_Kurt)
-
 SLRModelMetrics |> 
   kable(caption = "Mean Squared Error using Simple Linear Regression")
 ```
@@ -149,22 +193,26 @@ for(i in 1:10){
 
 ```{r}
 poly_mean <- lm(mean ~ poly(St, 2) + Re + Fr, data = centralTrain)
-mse_poly_mean <- sum(resid(poly_mean)^2)/nrow(centralTrain)
+yhat <- predict(poly_mean, newdata = centralVal)
+MSE_Poly_Mean <- sum((yhat - centralVal$mean)^2)/nrow(centralVal)
 ```
 
 ```{r}
 poly_var <- lm(variance ~ poly(St, 2) + Re + Fr, data = centralTrain)
-mse_poly_var <- sum(resid(poly_var)^2)/nrow(centralTrain)
+yhat <- predict(poly_var, newdata = centralVal)
+MSE_Poly_Var <- sum((yhat - centralVal$variance)^2)/nrow(centralVal)
 ```
 
 ```{r}
 poly_skew <- lm(skewness ~ poly(St, 2) + Re + Fr, data = centralTrain)
-mse_poly_skew <- sum(resid(poly_skew)^2)/nrow(centralTrain)
+yhat <- predict(poly_skew, newdata = centralVal)
+MSE_Poly_Skew <- sum((yhat - centralVal$skewness)^2)/nrow(centralVal)
 ```
 
 ```{r}
 poly_kurt <- lm(kurtosis ~ poly(St, 2) + Re + Fr, data = centralTrain)
-mse_poly_kurt <- sum(resid(poly_kurt)^2)/nrow(centralTrain)
+yhat <- predict(poly_kurt, newdata = centralVal)
+MSE_Poly_Kurt <- sum((yhat - centralVal$kurtosis)^2)/nrow(centralVal)
 
 #Using 2nd degree polynomial models while also predicting the moments with Froud's and Reynolds' Numnbers, we get lower MSE's for all four moments, however these MSEs are still outrageously high for skew and kurtosis, indicating that using polynomials would also not be the best way of predicting the moments.
 ```
@@ -173,39 +221,42 @@ mse_poly_kurt <- sum(resid(poly_kurt)^2)/nrow(centralTrain)
 
 ```{r}
 inter_fit_mean <- lm(mean ~ (Re + Fr + St)^2, data = centralTrain)
-mse_inter_fit_mean <- sum(resid(inter_fit_mean)^2)/nrow(centralTrain)
+yhat <- predict(inter_fit_mean, newdata = centralVal)
+MSE_Inter_Mean <- sum((yhat - centralVal$mean)^2)/nrow(centralVal)
 
 inter_fit_var <- lm(variance ~ (Re + Fr + St)^2, data = centralTrain)
-mse_inter_fit_var <- sum(resid(inter_fit_var)^2)/nrow(centralTrain)
+yhat <- predict(inter_fit_var, newdata = centralVal)
+MSE_Inter_Var <- sum((yhat - centralVal$variance)^2)/nrow(centralVal)
+
 
 inter_fit_skew <- lm(skewness ~ (Re + Fr + St)^2, data = centralTrain)
-mse_inter_fit_skew <- sum(resid(inter_fit_skew)^2)/nrow(centralTrain)
+yhat <- predict(inter_fit_skew, newdata = centralVal)
+MSE_Inter_Skew <- sum((yhat - centralVal$skewness)^2)/nrow(centralVal)
+
 
 inter_fit_kurt <- lm(kurtosis ~ (Re + Fr + St)^2, data = centralTrain)
-mse_inter_fit_kurt <- sum(resid(inter_fit_kurt)^2)/nrow(centralTrain)
-```
-
-### GAM ( feel like no good too many categorical?)
-
-```{r}
-#gam_mean <- lm(mean ~ ns(St, 4) + Fr + Re, data = centralTrain)
-#gam_mean_sum(resid(gam_mean)^2)/nrow(centralTrain)
+yhat <- predict(inter_fit_kurt, newdata = centralVal)
+MSE_Inter_Kurt <- sum((yhat - centralVal$kurtosis)^2)/nrow(centralVal)
 ```
 
 ### Trees
 
 ```{r}
 tree_mean <- tree(mean ~ St + Fr + Re, data = centralTrain)
-tree_mean_mse <- sum(resid(tree_mean)^2)/nrow(centralTrain)
+yhat <- predict(tree_mean, newdata = centralVal)
+MSE_Tree_mean <- sum((yhat - centralVal$mean)^2)/nrow(centralVal)
 
 tree_var <- tree(variance ~ St + Fr + Re, data = centralTrain)
-tree_var_mse <- sum(resid(tree_var)^2)/nrow(centralTrain)
+yhat <- predict(tree_var, newdata = centralVal)
+MSE_Tree_var <- sum((yhat - centralVal$variance)^2)/nrow(centralVal)
 
 tree_skew <- tree(skewness ~ St + Fr + Re, data = centralTrain)
-tree_skew_mse <- sum(resid(tree_skew)^2)/nrow(centralTrain)
+yhat <- predict(tree_skew, newdata = centralVal)
+MSE_Tree_skew <- sum((yhat - centralVal$skewness)^2)/nrow(centralVal)
 
 tree_kurt <- tree(kurtosis ~ St + Fr + Re, data = centralTrain)
-tree_kurt_mse <- sum(resid(tree_kurt)^2)/nrow(centralTrain)
+yhat <- predict(tree_kurt, newdata = centralVal)
+MSE_Tree_kurt <- sum((yhat - centralVal$kurtosis)^2)/nrow(centralVal)
 ```
 
 ### Boosting
@@ -217,27 +268,27 @@ set.seed(123)
 boost_mean <- gbm(mean ~ St + Fr + Re, data = centralTrain, 
                     distribution = "gaussian", n.trees = 5000,
                     interaction.depth = 4)
-mean_yhat <- predict(boost_mean, newdata = centralTrain, n.trees = 5000)
-mse_boost_mean <- sum((mean_yhat - centralTrain$mean)^2)/nrow(centralTrain)
+yhat <- predict(boost_mean, newdata = centralVal, n.trees = 5000)
+MSE_Boost_mean <- sum((yhat - centralVal$mean)^2)/nrow(centralVal)
 
 
 boost_var <- gbm(variance ~ St + Fr + Re, data = centralTrain, 
                     distribution = "gaussian", n.trees = 5000,
                     interaction.depth = 4)
-var_yhat <- predict(boost_var, newdata = centralTrain, n.trees = 5000)
-mse_boost_var <- sum((var_yhat - centralTrain$variance)^2)/nrow(centralTrain)
+yhat <- predict(boost_var, newdata = centralVal, n.trees = 5000)
+MSE_Boost_var <- sum((yhat - centralVal$variance)^2)/nrow(centralVal)
 
 boost_skew <- gbm(skewness ~ St + Fr + Re, data = centralTrain, 
                     distribution = "gaussian", n.trees = 5000,
                     interaction.depth = 4)
-skew_yhat <- predict(boost_skew, newdata = centralTrain, n.trees = 5000)
-mse_boost_skew <- sum((skew_yhat - centralTrain$skewness)^2)/nrow(centralTrain)
+yhat <- predict(boost_skew, newdata = centralVal, n.trees = 5000)
+MSE_Boost_skew <- sum((yhat - centralVal$skewness)^2)/nrow(centralVal)
 
 boost_kurt <- gbm(kurtosis ~ St + Fr + Re, data = centralTrain, 
                     distribution = "gaussian", n.trees = 5000,
                     interaction.depth = 4)
-kurt_yhat <- predict(boost_kurt, newdata = centralTrain, n.trees = 5000)
-mse_boost_kurt <- sum((kurt_yhat - centralTrain$kurtosis)^2)/nrow(centralTrain)
+yhat <- predict(boost_kurt, newdata = centralVal, n.trees = 5000)
+MSE_Boost_kurt <- sum((yhat - centralVal$kurtosis)^2)/nrow(centralVal)
 ```
 
 ## Evaluating Our Models
@@ -246,28 +297,28 @@ mse_boost_kurt <- sum((kurt_yhat - centralTrain$kurtosis)^2)/nrow(centralTrain)
 #| echo: false
 ModelMetricsMoment1 <- tribble(~ModelType, ~MSE,
                         "Linear Regression", MSE_SLR_Mean,
-                        "2nd Degree Polynomial", mse_poly_mean,
-                        "Interaction Effects", mse_inter_fit_mean,
-                        "Simple Tree Model", tree_mean_mse,
-                        "Boosted Model", mse_boost_mean) 
+                        "2nd Degree Polynomial", MSE_Poly_Mean,
+                        "Interaction Effects", MSE_Inter_Mean,
+                        "Simple Tree Model", MSE_Tree_mean,
+                        "Boosted Model", MSE_Boost_mean) 
 ModelMetricsMoment2 <- tribble(~ModelType, ~MSE,
                         "Linear Regression", MSE_SLR_Var,
-                        "2nd Degree Polynomial", mse_poly_var,
-                        "Interaction Effects", mse_inter_fit_var,
-                        "Tree Based Model", tree_var_mse,
-                        "Boosted Model", mse_boost_var) 
+                        "2nd Degree Polynomial", MSE_Poly_Var,
+                        "Interaction Effects", MSE_Inter_Var,
+                        "Tree Based Model", MSE_Tree_var,
+                        "Boosted Model", MSE_Boost_var) 
 ModelMetricsMoment3 <- tribble(~ModelType, ~MSE,
                         "Linear Regression", MSE_SLR_Skew,
-                        "2nd Degree Polynomial", mse_poly_skew,
-                        "Interaction Effects", mse_inter_fit_skew,
-                        "Tree Based Model", tree_skew_mse,
-                        "Boosted Model", mse_boost_skew) 
+                        "2nd Degree Polynomial", MSE_Poly_Skew,
+                        "Interaction Effects", MSE_Inter_Skew,
+                        "Tree Based Model", MSE_Tree_skew,
+                        "Boosted Model", MSE_Boost_skew) 
 ModelMetricsMoment4 <- tribble(~ModelType, ~MSE,
                         "Linear Regression", MSE_SLR_Kurt,
-                        "2nd Degree Polynomial", mse_poly_kurt,
-                        "Interaction Effects", mse_inter_fit_kurt,
-                        "Tree Based Model", tree_kurt_mse,
-                        "Boosted Model", mse_boost_kurt) 
+                        "2nd Degree Polynomial", MSE_Poly_Kurt,
+                        "Interaction Effects", MSE_Inter_Kurt,
+                        "Tree Based Model", MSE_Tree_kurt,
+                        "Boosted Model", MSE_Boost_kurt) 
 
 ModelMetricsMoment1 |> arrange(MSE) |> slice(1) |> pull(ModelType)
 ModelMetricsMoment2 |> arrange(MSE) |> slice(1) |> pull(ModelType)

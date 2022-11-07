@@ -63,6 +63,13 @@ ul.task-list{list-style: none;}
 
 <section id="introduction" class="level2">
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>Nobel Prize winning Physicist Richard Feynman said that turbulence was “the most important unsolved problem of classical physics”. Although, we still unexpectedly feel bumps on airplines and have trouble truly predicting where a Hurricane will strike land, we hope to add to the field of research studying how to model turbulent systems. We position our research in two key areas:</p>
+<ol type="1">
+<li>Prediction</li>
+<li>Statistical Inference</li>
+</ol>
+<p>Prediction is important in the context of this problem as data from turbulent systems is very computationally expensive to obtain. Therefore, experiments using data on the evolution turbulent systems need better, quicker, cheaper methods to get data.</p>
+<p>Statistical Inference is also important as it can help elucidate the connections between turbulence and initial settings. We hope to build a model that gives clarity on this as well.</p>
 </section>
 <section id="methodology" class="level2">
 <h2 class="anchored" data-anchor-id="methodology">Methodology</h2>
@@ -72,6 +79,15 @@ ul.task-list{list-style: none;}
 <div class="cell">
 
 </div>
+<p>We are given 89 data points, but we only use 66 data points for training our model as to not overfit our model. We will examine numerous different types of models including:</p>
+<ul>
+<li>A simple Linear Regression Model</li>
+<li>More Complex Non-Linear Regression Model</li>
+<li>Tree Based Model</li>
+<li>Boosted Tree Model</li>
+</ul>
+<p>The data has <code>4</code> response variables and <code>3</code> input variables. Each output variable is a raw moment of a final turbulent distribution. We’ve converted the raw moments to central moments so as for better interpret ability. We keep the first raw moment, however.</p>
+<p>As there are only three input variables, we will stray away from methods which look for sparse models. Our model is, already, sparse so there is no need to make it more sparse.</p>
 <section id="quick-transformations-for-our-input-variables" class="level4">
 <h4 class="anchored" data-anchor-id="quick-transformations-for-our-input-variables">Quick Transformations for our Input Variables</h4>
 <div class="cell">
@@ -88,21 +104,21 @@ ul.task-list{list-style: none;}
 <tbody>
 <tr class="odd">
 <td style="text-align: right;">90</td>
-<td style="text-align: right;">31</td>
+<td style="text-align: right;">22</td>
 <td style="text-align: right;">0.052</td>
-<td style="text-align: right;">36</td>
+<td style="text-align: right;">23</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">224</td>
-<td style="text-align: right;">39</td>
+<td style="text-align: right;">29</td>
 <td style="text-align: right;">0.300</td>
-<td style="text-align: right;">23</td>
+<td style="text-align: right;">19</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">398</td>
-<td style="text-align: right;">19</td>
+<td style="text-align: right;">15</td>
 <td style="text-align: right;">Inf</td>
-<td style="text-align: right;">30</td>
+<td style="text-align: right;">24</td>
 </tr>
 </tbody>
 </table>
@@ -115,15 +131,6 @@ ul.task-list{list-style: none;}
 </section>
 <section id="simple-linear-regression-benchmark" class="level3">
 <h3 class="anchored" data-anchor-id="simple-linear-regression-benchmark">Simple Linear Regression Benchmark</h3>
-<div class="cell">
-
-</div>
-<div class="cell">
-
-</div>
-<div class="cell">
-
-</div>
 <div class="cell">
 
 </div>
@@ -141,10 +148,10 @@ ul.task-list{list-style: none;}
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: right;">0.000218</td>
-<td style="text-align: right;">37239.52</td>
-<td style="text-align: right;">2.655954e+12</td>
-<td style="text-align: right;">1.899136e+20</td>
+<td style="text-align: right;">0.0003786</td>
+<td style="text-align: right;">115074.7</td>
+<td style="text-align: right;">1.452461e+13</td>
+<td style="text-align: right;">6.84035e+20</td>
 </tr>
 </tbody>
 </table>
@@ -185,12 +192,6 @@ ul.task-list{list-style: none;}
 
 </div>
 </section>
-<section id="gam-feel-like-no-good-too-many-categorical" class="level3">
-<h3 class="anchored" data-anchor-id="gam-feel-like-no-good-too-many-categorical">GAM ( feel like no good too many categorical?)</h3>
-<div class="cell">
-
-</div>
-</section>
 <section id="trees" class="level3">
 <h3 class="anchored" data-anchor-id="trees">Trees</h3>
 <div class="cell">
@@ -211,13 +212,13 @@ ul.task-list{list-style: none;}
 <pre><code>[1] "Boosted Model"</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "Boosted Model"</code></pre>
+<pre><code>[1] "Interaction Effects"</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "Boosted Model"</code></pre>
+<pre><code>[1] "Interaction Effects"</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "Boosted Model"</code></pre>
+<pre><code>[1] "Interaction Effects"</code></pre>
 </div>
 </div>
 </section>
