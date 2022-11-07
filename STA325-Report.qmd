@@ -1,26 +1,23 @@
 ---
 title: "STA325 Case Study"
 author: "Chase Mathis, Dillan Sant"
-format: pdf
+format: html
 execute: 
   warning: false
   echo: false
 editor: visual
 ---
 
-## Packages/Data
+## 
 
 ```{r}
-#| echo: true
+#| echo: false
 library(tidyverse) # datawrangling
 library(tidymodels) #modeling steps
 library(knitr) # nice output
 library(boot)
 library(patchwork)
 
-```
-
-```{r}
 ggplot2::theme_set(ggplot2::theme_minimal())
 
 train <- read_csv("data/data-train.csv")
@@ -38,21 +35,15 @@ centralTrain <- train |>
   select(-contains("R_"))
 ```
 
-#### Investigating Relationship Between Mean and Froude's Number
+#### Quick Input Variables Transformations
 
 ```{r}
 centralTrain |> 
-  count(Fr) |> 
-  kable(col.names = c("Froude's Number", "Count"), caption = "Distribution of Froude's Number")
+  count(Re) |> 
+  bind_cols(centralTrain |> count(Fr))
 ```
 
-Similar to Reynolds number, this number is somewhat non-continuous as there is only three buckets for the number. Therefore I am going to make it a categorical variable to help interpretability. For instance, how do we interpret Infinity? Instead I will make
-
--   0.052 == `Low`
-
--   0.300 == `Medium`
-
--   Inf == `Infinity`
+Reynold's and Freyman's numbers are non-continuous as there is only three buckets for the numbers. Therefore I am going to make them a categorical variable to help interpretability.
 
 ```{r}
 centralTrain <- centralTrain |> 
@@ -70,47 +61,14 @@ centralTrain <- centralTrain %>%
     Re == 90 ~ "Low")) %>%
   mutate(Re = factor(Re, levels = c("Low", "Medium", "High")))
 
-centralTrain |> 
-  ggplot(aes(x = mean, fill = Fr)) + 
-  geom_histogram(bins = 8) + 
-  facet_wrap(~Fr) + 
-  theme(axis.text.x = element_text(angle = 45)) + 
-  labs(
-    x = "Raw Moment 1",
-    y = "Count",
-    fill = "Froud's Number",
-    title = "Relationship between Froud's Number and the Mean"
-  )
-```
 
-It seems hard to distinguish what affect Froud's number has on the mean from this plot.
+```
 
 ## Inference
 
 ### Stokes Number `St`
 
-Stoke's Number quantifies the particle's characteristics i.e. it's size and density. Let's see how this parameter effects the distribution of the final turbulent space.
-
-```{r}
-StokesLMMean <- lm(mean ~ St, data = centralTrain)
-summary(StokesLMMean)$coefficients
-```
-
-Using a linear model with only Stoke's predictor, we see that the predictor is statistically signifcant for an alpha level of `0.01`. We can interpret it's coefficient as for every one point increase in Stoke's number, the `mean` of the final turbulent distribution increases by about `0.015` .
-
-```{r}
-StokesLmVar <- lm(variance ~ St, data = centralTrain)
-print("Variance Output")
-summary(StokesLmVar)$coefficients
-StokesLmSkew <- lm(skewness ~ St, data = centralTrain)
-print("Skewness Output")
-summary(StokesLmSkew)$coefficients
-StokesLmKurt <- lm(kurtosis ~ St, data = centralTrain)
-print("Kurtosis Output")
-summary(StokesLmKurt)$coefficients
-```
-
-Looking at the summary for a Linear Model predicting the variance of the final distribution with Stoke's Number, we can see that it has essentially no affect on the `variance`, `skewness`, or `kurtosis` of the final system. Overall, this parameter does not seem to have a great impact on the final resulting distribution in general. This can be made clear by visualizing it's relationship:
+Stoke's Number quantifies the particle's characteristics i.e. it's size and density. Let's see how this parameter effects the distribution of the final turbulent space. If we look at some visualizations, we can see it has a rather weak association with the output variables:
 
 ```{r}
 p1 <- ggplot(data = centralTrain, aes(x = St, y = mean)) + geom_point() + 
@@ -135,31 +93,42 @@ p4 <- ggplot(data = centralTrain, aes(x = St, y = kurtosis)) + geom_point()+
   )
 
 (p1 + p2)/(p3 + p4)
+
 ```
+
+In fact, when we fit SLR models with it as an input and the respective central moments as the output, none of the relationships come up as statistically significant for an alpha level of `0.01` .
 
 ### Reynold's Number `Re`
 
-Reynold's Number `Re` in our data is a number that quantifies the initial fluid turbulence of the system.
+Reynold's Number, `Re` in our data, is a number that quantifies the initial fluid turbulence of the system.
 
 #### `Mean` Model
 
 ```{r}
 Re_LM_Mean <- lm(mean ~ Re, data = centralTrain)
-summary(Re_LM_Mean)$coefficients 
+summary(Re_LM_Mean)$coefficients |> as_tibble() |> 
+  select(Estimate, contains("Pr")) |> 
+  kable()
 ```
 
-Looking at the output, it is clear that `Re` has a statistically significant relationship with the outputting mean of the distribution for each of its levels. However, the true effect is not very large. However, we can say that when `Re` == `Low` , the resulting mean is 0.11 points higher on average than `Medium` or `High`. When `Re` == `Medium` and `Re` == `High` the resulting mean is around 11 points **lower** than the baseline when `Re` == `Low`. Therefore, it is clear to see that `Re` has an **inverse** relationship with the mean of the resulting distribution.
+-   `Re` has a statistically significant relationship with the outputting mean of the distribution for each of its levels.
+
+-   `Re` has an **inverse** relationship with the mean of the resulting distribution.
 
 #### `Variance` Model
 
 ```{r}
 Re_LM_Variance <- lm(variance ~ Re, data = centralTrain)
-summary(Re_LM_Variance)$coefficients 
+summary(Re_LM_Variance)$coefficients |> as_tibble() |> 
+  select(Estimate, contains("Pr")) |> 
+  kable()
 ```
 
-Similar to the `Mean` model, if we glance at the output, it is clear that `Re` has a statistically significant relationship with the outputting mean of the distribution for each of its levels. The true effect in this case is relatively large. When `Re` == `Low`, the resulting variance is 265.45 times higher on average than `Medium` or `High`. When `Re` == `Medium` or `Re` == `High` the resulting variance is around 265 times **lower** than the baseline when `Re` == `Low`. Therefore, it is clear to see that `Re` has an **inverse** relationship with the `variance` of the resulting distribution. In other words, **a higher Reynold's number results in a lower varied distribution.**
+-   `Re` has a statistically significant relationship with the outputting variance of the distribution for each of its levels.
 
-This follows the intutition that when a gravitational force is higher, clusters will form at a higher rate resulting in a lower variance number.
+-   It is clear to see that `Re` has an **inverse** relationship with the `variance` of the resulting distribution. In other words, **a higher Reynold's number results in a lower varied distribution.**
+
+-   This follows our intuitition that when a gravitational force is higher, clusters will form at a higher rate resulting in a lower variance number.
 
 ## Prediction
 

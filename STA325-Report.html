@@ -16,69 +16,6 @@ span.underline{text-decoration: underline;}
 div.column{display: inline-block; vertical-align: top; width: 50%;}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-    color: #aaaaaa;
-  }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
 
@@ -124,68 +61,120 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 </header>
 
-<section id="packagesdata" class="level2">
-<h2 class="anchored" data-anchor-id="packagesdata">Packages/Data</h2>
+<section id="section" class="level2">
+<h2 class="anchored" data-anchor-id="section"></h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse) <span class="co"># datawrangling</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidymodels) <span class="co">#modeling steps</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr) <span class="co"># nice output</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(boot)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">theme_set</span>(ggplot2<span class="sc">::</span><span class="fu">theme_minimal</span>())</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>train <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/data-train.csv"</span>)</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>test <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/data-test.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
 </div>
 <div class="cell">
 
 </div>
-<section id="investigating-relationship-between-mean-and-froudes-number" class="level4">
-<h4 class="anchored" data-anchor-id="investigating-relationship-between-mean-and-froudes-number">Investigating Relationship Between Mean and Froude’s Number</h4>
+<section id="quick-input-variables-transformations" class="level4">
+<h4 class="anchored" data-anchor-id="quick-input-variables-transformations">Quick Input Variables Transformations</h4>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 4
+     Re n...2      Fr n...4
+  &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;int&gt;
+1    90    31   0.052    36
+2   224    39   0.3      23
+3   398    19 Inf        30</code></pre>
+</div>
+</div>
+<p>Reynold’s and Freyman’s numbers are non-continuous as there is only three buckets for the numbers. Therefore I am going to make them a categorical variable to help interpretability.</p>
+<div class="cell">
+
+</div>
+</section>
+</section>
+<section id="inference" class="level2">
+<h2 class="anchored" data-anchor-id="inference">Inference</h2>
+<section id="stokes-number-st" class="level3">
+<h3 class="anchored" data-anchor-id="stokes-number-st">Stokes Number <code>St</code></h3>
+<p>Stoke’s Number quantifies the particle’s characteristics i.e.&nbsp;it’s size and density. Let’s see how this parameter effects the distribution of the final turbulent space. If we look at some visualizations, we can see it has a rather weak association with the output variables:</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="STA325-Report_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>In fact, when we fit SLR models with it as an input and the respective central moments as the output, none of the relationships come up as statistically significant for an alpha level of <code>0.01</code> .</p>
+</section>
+<section id="reynolds-number-re" class="level3">
+<h3 class="anchored" data-anchor-id="reynolds-number-re">Reynold’s Number <code>Re</code></h3>
+<p>Reynold’s Number, <code>Re</code> in our data, is a number that quantifies the initial fluid turbulence of the system.</p>
+<section id="mean-model" class="level4">
+<h4 class="anchored" data-anchor-id="mean-model"><code>Mean</code> Model</h4>
 <div class="cell">
 <div class="cell-output-display">
 <table class="table table-sm table-striped">
-<caption>Distribution of Froude’s Number</caption>
 <thead>
 <tr class="header">
-<th style="text-align: right;">Froude’s Number</th>
-<th style="text-align: right;">Count</th>
+<th style="text-align: right;">Estimate</th>
+<th style="text-align: right;">Pr(&gt;|t|)</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: right;">0.052</td>
-<td style="text-align: right;">36</td>
+<td style="text-align: right;">0.1120959</td>
+<td style="text-align: right;">0</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">0.300</td>
-<td style="text-align: right;">23</td>
+<td style="text-align: right;">-0.1091886</td>
+<td style="text-align: right;">0</td>
 </tr>
 <tr class="odd">
-<td style="text-align: right;">Inf</td>
-<td style="text-align: right;">30</td>
+<td style="text-align: right;">-0.1117449</td>
+<td style="text-align: right;">0</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
-<p>Similar to Reynolds number, this number is somewhat non-continuous as there is only three buckets for the number. Therefore I am going to make it a categorical variable to help interprebaility. For instance, how do we interpret Infinity? Instead I will make</p>
 <ul>
-<li><p>0.052 == <code>Low</code></p></li>
-<li><p>0.300 == <code>Medium</code></p></li>
-<li><p>Inf == <code>Infinity</code></p></li>
+<li><p><code>Re</code> has a statistically significant relationship with the outputting mean of the distribution for each of its levels.</p></li>
+<li><p><code>Re</code> has an <strong>inverse</strong> relationship with the mean of the resulting distribution.</p></li>
 </ul>
+</section>
+<section id="variance-model" class="level4">
+<h4 class="anchored" data-anchor-id="variance-model"><code>Variance</code> Model</h4>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="STA325-Report_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+<table class="table table-sm table-striped">
+<thead>
+<tr class="header">
+<th style="text-align: right;">Estimate</th>
+<th style="text-align: right;">Pr(&gt;|t|)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">265.3472</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">-265.2103</td>
+<td style="text-align: right;">0.0000078</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">-265.3418</td>
+<td style="text-align: right;">0.0001693</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
-<p>It seems hard to distinguish what affect Froud’s number has on the mean from this plot.</p>
+<ul>
+<li><p><code>Re</code> has a statistically significant relationship with the outputting variance of the distribution for each of its levels.</p></li>
+<li><p>It is clear to see that <code>Re</code> has an <strong>inverse</strong> relationship with the <code>variance</code> of the resulting distribution. In other words, <strong>a higher Reynold’s number results in a lower varied distribution.</strong></p></li>
+<li><p>This follows our intuitition that when a gravitational force is higher, clusters will form at a higher rate resulting in a lower variance number.</p></li>
+</ul>
 </section>
 </section>
-<section id="simple-linear-regression" class="level2">
-<h2 class="anchored" data-anchor-id="simple-linear-regression">Simple Linear Regression</h2>
+</section>
+<section id="prediction" class="level2">
+<h2 class="anchored" data-anchor-id="prediction">Prediction</h2>
+<section id="simple-linear-regression" class="level3">
+<h3 class="anchored" data-anchor-id="simple-linear-regression">Simple Linear Regression</h3>
 <div class="cell">
 
 </div>
@@ -223,8 +212,26 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <p>It is clear that the using a Simple Linear Regression model to predict anything but the <code>mean</code> is not a good idea as the performance is not good. Nonetheless it serves as a good baseline for predicting further complex models.</p>
 </section>
-<section id="polynomials" class="level2">
-<h2 class="anchored" data-anchor-id="polynomials">Polynomials</h2>
+<section id="polynomials" class="level3">
+<h3 class="anchored" data-anchor-id="polynomials">Polynomials</h3>
+<div class="cell">
+
+</div>
+<div class="cell">
+
+</div>
+<div class="cell">
+
+</div>
+<div class="cell">
+
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="STA325-Report_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The optimal degree polynomials for predicting mean, variance, skew, and kurtosis are all 2 for Stokes Number.</p>
 <div class="cell">
 
 </div>
@@ -239,108 +246,46 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <p>Using 2nd degree polynomial models while also predicting the moments with Froud’s and Reynolds’ Numnbers, we get lower MSE’s for all four moments, however these MSEs are still outrageously high for skew and kurtosis, indicating that using polynomials would also not be the best way of predicting the moments.</p>
 </section>
-<section id="inference" class="level2">
-<h2 class="anchored" data-anchor-id="inference">Inference</h2>
-<section id="stokes-number-st" class="level3">
-<h3 class="anchored" data-anchor-id="stokes-number-st">Stokes Number <code>St</code></h3>
-<p>Stoke’s Number quantifies the particle’s characteristics i.e.&nbsp;it’s size and density. Let’s see how this parameter effects the distribution of the final turbulent space.</p>
+<section id="interaction-effects-to-do" class="level3">
+<h3 class="anchored" data-anchor-id="interaction-effects-to-do">Interaction Effects (to-do)</h3>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code>              Estimate  Std. Error  t value    Pr(&gt;|t|)
-(Intercept) 0.02727949 0.008642157 3.156561 0.002193806
-St          0.01525690 0.007438449 2.051086 0.043266692</code></pre>
-</div>
-</div>
-<p>Using a linear model with only Stoke’s predictor, we see that the predictor is statistically signifcant for an alpha level of <code>0.01</code>. We can interpret it’s coefficient as for every one point increase in Stoke’s number, the <code>mean</code> of the final turbulent distribution increases by about <code>0.015</code> .</p>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "Variance Output"</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>            Estimate Std. Error  t value  Pr(&gt;|t|)
-(Intercept) 50.13945   41.02933 1.222039 0.2249935
-St          49.26535   35.31463 1.395041 0.1665549</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "Skewness Output"</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>            Estimate Std. Error  t value  Pr(&gt;|t|)
-(Intercept) 360097.4   341169.4 1.055480 0.2941282
-St          457487.7   293650.2 1.557934 0.1228792</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "Kurtosis Output"</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>              Estimate Std. Error   t value   Pr(&gt;|t|)
-(Intercept) 2594695036 2849353546 0.9106259 0.36500867
-St          4186989858 2452486167 1.7072430 0.09134354</code></pre>
-</div>
-</div>
-<p>Looking at the summary for a Linear Model predicting the variance of the final distribution with Stoke’s Number, we can see that it has essentially no affect on the <code>variance</code>, <code>skewness</code>, or <code>kurtosis</code> of the final system. Overall, this parameter does not seem to have a great impact on the final resulting distribution in general. This can be made clear by visualizing it’s relationship:</p>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="STA325-Report_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
+<pre><code>                        Estimate  Std. Error    t value     Pr(&gt;|t|)
+(Intercept)          0.108580531 0.002377907  45.662236 5.265113e-57
+ReMedium            -0.103060131 0.002987389 -34.498397 3.546585e-48
+ReHigh              -0.106709512 0.003603124 -29.615831 1.743279e-43
+FrMedium            -0.035778301 0.003540488 -10.105471 1.048667e-15
+FrInfinity          -0.038678957 0.003219341 -12.014556 3.031953e-19
+St                   0.024312829 0.001744268  13.938697 1.233637e-22
+ReMedium:FrMedium    0.028831079 0.003657032   7.883737 1.837273e-11
+ReMedium:FrInfinity  0.033657145 0.003705031   9.084172 9.212342e-14
+ReHigh:FrInfinity    0.034293911 0.004051186   8.465154 1.413955e-12
+ReMedium:St         -0.027399550 0.001938283 -14.135990 5.685515e-23
+ReHigh:St           -0.025833618 0.002505996 -10.308724 4.336296e-16
+FrMedium:St          0.008944036 0.002379658   3.758539 3.333752e-04
+FrInfinity:St        0.005955800 0.001995202   2.985061 3.812474e-03</code></pre>
 </div>
 </div>
 </section>
-<section id="reynolds-number-re" class="level3">
-<h3 class="anchored" data-anchor-id="reynolds-number-re">Reynold’s Number <code>Re</code></h3>
-<p>Reynold’s Number <code>Re</code> in our data is a number that quantifies the initial fluid turbulence of the system.</p>
-<section id="mean-model" class="level4">
-<h4 class="anchored" data-anchor-id="mean-model"><code>Mean</code> Model</h4>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>              Estimate  Std. Error   t value     Pr(&gt;|t|)
-(Intercept)  0.1120959 0.003342233  33.53924 3.623490e-51
-ReMedium    -0.1091886 0.004477683 -24.38507 2.139226e-40
-ReHigh      -0.1117449 0.005421817 -20.61024 5.032396e-35</code></pre>
-</div>
-</div>
-<p>Looking at the output, it is clear that <code>Re</code> has a statistically significant relationship with the outputting mean of the distribution for each of its levels. However, the true effect is not very large. However, we can say that when <code>Re</code> == <code>Low</code> , the resulting mean is 0.11 points higher on average than <code>Medium</code> or <code>High</code>. When <code>Re</code> == <code>Medium</code> and <code>Re</code> == <code>High</code> the resulting mean is around 11 points <strong>lower</strong> than the baseline when <code>Re</code> == <code>Low</code>. Therefore, it is clear to see that <code>Re</code> has an <strong>inverse</strong> relationship with the mean of the resulting distribution.</p>
+<section id="splines" class="level3">
+<h3 class="anchored" data-anchor-id="splines">Splines</h3>
 </section>
-<section id="variance-model" class="level4">
-<h4 class="anchored" data-anchor-id="variance-model"><code>Variance</code> Model</h4>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>             Estimate Std. Error   t value     Pr(&gt;|t|)
-(Intercept)  265.3472   41.58665  6.380587 8.558301e-09
-ReMedium    -265.2103   55.71481 -4.760139 7.751474e-06
-ReHigh      -265.3418   67.46246 -3.933178 1.693051e-04</code></pre>
-</div>
-</div>
-<p>Similar to the <code>Mean</code> model, if we glance at the output, it is clear that <code>Re</code> has a statistically significant relationship with the outputting mean of the distribution for each of its levels. The true effect in this case is relatively large. When <code>Re</code> == <code>Low</code>, the resulting variance is 265.45 times higher on average than <code>Medium</code> or <code>High</code>. When <code>Re</code> == <code>Medium</code> or <code>Re</code> == <code>High</code> the resulting variance is around 265 times <strong>lower</strong> than the baseline when <code>Re</code> == <code>Low</code>. Therefore, it is clear to see that <code>Re</code> has an <strong>inverse</strong> relationship with the <code>variance</code> of the resulting distribution. In other words, <strong>a higher Reynold’s number results in a lower varied distribution.</strong></p>
-<p>This follows the intutition that when a gravitational force is higher, clusters will form at a higher rate resulting in a lower variance number.</p>
+<section id="trees" class="level3">
+<h3 class="anchored" data-anchor-id="trees">Trees</h3>
 </section>
+<section id="random-forests" class="level3">
+<h3 class="anchored" data-anchor-id="random-forests">Random Forests</h3>
 </section>
-</section>
-<section id="random-forests" class="level2">
-<h2 class="anchored" data-anchor-id="random-forests">Random Forests</h2>
 </section>
 <section id="evaluating-our-models" class="level2">
 <h2 class="anchored" data-anchor-id="evaluating-our-models">Evaluating Our Models</h2>
 <div class="cell">
 
 </div>
-<div class="cell">
-
-</div>
-<div class="cell">
-
-</div>
-<div class="cell">
-
-</div>
-<div class="cell">
-
-</div>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="STA325-Report_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-<p>The optimal degree polynomials for predicting mean, variance, skew, and kurtosis are all 2 for Stokes Number.</p>
+</section>
+<section id="todo" class="level2">
+<h2 class="anchored" data-anchor-id="todo">TODO:</h2>
+<p>Splines, (Natural, Cubic…), Tree based model</p>
 </section>
 
 </main>
