@@ -1,7 +1,7 @@
 ---
 title: "STA325 Case Study"
 author: "Chase Mathis, Dillan Sant"
-format: pdf
+format: html
 execute: 
   warning: false
   echo: false
@@ -365,13 +365,26 @@ ModelMetricsMoment4 <- tribble(~ModelType, ~MSE,
                         "2nd Degree Polynomial", MSE_Poly_Kurt,
                         "Interaction Effects", MSE_Inter_Kurt,
                         "Tree Based Model", MSE_Tree_kurt,
-
-                        "Boosted Model", MSE_Boost_kurt) 
+                        "Boosted Model", MSE_Boost_kurt)
 ```
 
-                        "Boosted Model", MSE_Boost_kurt)
+::: {layout-nrow="2"}
+```{r}
+ModelMetricsMoment1 %>% kable(digits = 6, caption = "Mean")
+```
 
-ModelMetricsMoment1 %\>% kable(digits = 6, caption = "Mean") ModelMetricsMoment2 %\>% kable(digits = 2, caption = "Variance") ModelMetricsMoment3 %\>% kable(digits = 2, caption = "Skew") ModelMetricsMoment4 %\>% kable(digits = 2, caption = "Kurtosis")
+```{r}
+ModelMetricsMoment2 %>% kable(digits = 2, caption = "Variance")
+```
+
+```{r}
+ModelMetricsMoment3 %>% kable(digits = 2, caption = "Skew")
+```
+
+```{r}
+ModelMetricsMoment4 %>% kable(digits = 2, caption = "Kurtosis")
+```
+:::
 
 ```{r}
 results <- c(ModelMetricsMoment1 |> arrange(MSE) |> slice(1) |> pull(ModelType),
@@ -386,29 +399,39 @@ Our final results of the MSE for each model for all of the four moments leads us
 ## Conclusion
 
 ### Investigating Relationships
+
 ::: {layout-nrow="2"}
 ```{r}
-plot(tree_mean)
-title("Fully Grown Tree Model for Mean")
-text(tree_mean)
+summary(SLRMean)$coefficients |> 
+  as.data.frame() |> 
+  kable(caption = "Mean Regression Model")
 ```
 
 ```{r}
-plot(tree_var)
-title("Fully Grown Tree Model for Variance")
-text(tree_var)
-
+summary(SLRVar)$coefficients |> 
+  as.data.frame() |> 
+kable(caption = "Variance Regression Model")
 ```
 
 ```{r}
-plot(tree_skew)
-title("Fully Grown Tree Model for Skewness")
-text(tree_skew)
+summary(SLRSkew)$coefficients |> 
+  as.data.frame() |> 
+  kable(caption = "Skewness Regression Model")
 ```
 
 ```{r}
-plot(tree_kurt)
-title("Fully Grown Tree Model for Kurtosis")
-text(tree_kurt)
+summary(SLRKurt)$coefficients |> 
+  as.data.frame() |> 
+  kable(caption = "Kurtosis Regression Model")
 ```
 :::
+
+For each response variable, the input variables have a different effect. For the:
+
+-   Mean
+
+-   Variance
+
+-   Skewness
+
+-   Kurtosis
