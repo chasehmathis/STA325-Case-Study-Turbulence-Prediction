@@ -2,6 +2,7 @@
 title: "STA325 Case Study"
 author: "Chase Mathis, Dillan Sant"
 format: html
+geometry: margin = 3cm
 execute: 
   warning: false
   echo: false
