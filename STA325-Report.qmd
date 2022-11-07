@@ -150,6 +150,8 @@ It is clear that the using a Simple Linear Regression model to predict anything 
 
 ### Polynomials
 
+We conducted cross-validation to determine the best fitting degree-polynomial for Stokes number. Our chose polynomial models will include some degree polynomial of Stokes number, while adding Frouds and Reynolds number as well. Since these variables are factors, we cannot make them polynomials, however, we still include these variables in our model since we decided against sparse models since we only start with three predictors, and all three predictors have a significant effect on the first four moments of particle cluster volume. 
+
 ```{r, warning = FALSE}
 set.seed(1)
 cv_error <- rep(0,10)
@@ -219,6 +221,8 @@ MSE_Poly_Kurt <- sum((yhat - centralVal$kurtosis)^2)/nrow(centralVal)
 ```
 
 ### Interaction Effects
+
+We check to see if there are significant interaction effects between the three predictors, and then construct a model with these interaction effects. We expect there to be significant interaction effects between the three predictors due to the similarity between the three numbers. For example, we expect Reynolds number (fluid turbulence) to have some relationship to Frouds number (gravitational acceleratio).
 
 ```{r}
 inter_fit_mean <- lm(mean ~ (Re + Fr + St)^2, data = centralTrain)
@@ -327,4 +331,4 @@ ModelMetricsMoment3 |> arrange(MSE) |> slice(1) |> pull(ModelType)
 ModelMetricsMoment4 |> arrange(MSE) |> slice(1) |> pull(ModelType)
 ```
 
-The final model selected for predicting all four moments is our tree-based model. This is the model that has the lowest MSE for mean, variance, skew, and kurtosis. The tree-based model makes for interpretable model for a tricky set of data which included only one quantitative predictor (Stokes number) and two factor variables (Reynolds number and Frouds number). Our only fear is that this tree-based model might be prone to overfitting to the training data, and perhaps would have a high test error. However, we believe that due to the simplicity of the training data combined with having the lowest training MSE relative to our other models that the tree-based model serves as the best predictor of the first four central moments of particle cluster volume.  
+The final model selected for predicting all four moments is our tree-based model. This is the model that has the lowest MSE for mean, variance, skew, and kurtosis. The tree-based model makes for interpretable model for a tricky set of data which included only one quantitative predictor (Stokes number) and two factor variables (Reynolds number and Frouds number). Our only fear is that this tree-based model might be prone to overfitting to the training data, and perhaps would have a high test error. However, we believe that due to the simplicity and conciseness of the training data combined with having the lowest training MSE relative to our other models that the tree-based model serves as the best predictor of the first four central moments of particle cluster volume.  
