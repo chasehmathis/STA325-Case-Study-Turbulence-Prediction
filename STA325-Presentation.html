@@ -349,8 +349,18 @@
 </section>
 <section id="more-details" class="slide level2">
 <h2>More Details</h2>
-<p>While cross-validation is a common technique to estimate the true test-error, we believe that it would be too computationally expensive to fit many different folds of all of the models we wish to predict. This is a shortcoming, and provides for future investigation.</p>
-<p>As there are only three input variables, we will stray away from methods which penalize models with high numbers of correlated predictors i.e.&nbsp;(lasso/ridge regression). Our model is already sparse so there is there is no need to make it more sparse and there is low risk that the predictors are highly correlated.</p>
+<ul>
+<li><p>Cross Validation:</p>
+<ul>
+<li><p>While cross-validation is a common technique to estimate the true test-error, we believe that it would be too computationally expensive to fit many different folds of all of the models we wish to predict.</p></li>
+<li><p>This is a shortcoming, and provides for future investigation.</p></li>
+</ul></li>
+<li><p>No Ridge and Lasso Regression?</p>
+<ul>
+<li><p>As there are only three input variables, we will stay away from methods which penalize models with high numbers of correlated predictors i.e.&nbsp;(lasso/ridge regression).</p></li>
+<li><p>Our model is already sparse so there is there is no need to make it more sparse and there is low risk that the predictors are highly correlated.</p></li>
+</ul></li>
+</ul>
 <div class="cell">
 
 </div>
@@ -386,7 +396,10 @@
 </table>
 </div>
 </div>
-<p>It is clear looking at the MSEs of the moment that the using a Simple Linear Regression model to predict anything but the <code>mean</code> is not a good idea as the performance is not good, with increasingly high MSEs for each moment. Nonetheless, it serves as a good baseline for assessing further complex models.</p>
+<ul>
+<li>It is clear looking at the MSEs of the moment that the using a Simple Linear Regression model to predict anything but the <code>mean</code> is not a good idea.</li>
+<li>Nonetheless, it serves as a good baseline for assessing further complex models.</li>
+</ul>
 </section>
 <section id="polynomials" class="slide level2">
 <h2>Polynomials</h2>
@@ -509,45 +522,185 @@
 <pre><code>[1] "Tree Based Model" "Tree Based Model" "Tree Based Model" "Tree Based Model"</code></pre>
 </div>
 </div>
-<p>Our final results of the MSE for each model for all of the four moments leads us to selecting the tree-based model. This is the model that has the lowest MSE for <code>mean</code>, <code>variance</code>, <code>skew</code>, and <code>kurtosis</code>. The tree-based model makes for interpretable model for a tricky set of data which included only one quantitative predictor (Stokes number) and two factor variables (Reynolds number and Frouds number). While the data supports us using a tree-based model, we understand that there comes some uncertainty with this model selection. We randomly sampled a validation set to test our error and if we sampled a different batch of data, a different model may have predicted better.</p>
+<ul>
+<li><p>Using our validation set hold out we can report the different MSE for different types of models</p></li>
+<li><p>Across the board, however, Tree Based Model predicted the best on the validation set</p></li>
+</ul>
+</section>
+<section id="mean-model" class="slide level2">
+<h2>Mean Model</h2>
+<div class="cell">
+<div class="cell-output-display">
+<table>
+<caption>Mean Model Error</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">ModelType</th>
+<th style="text-align: right;">MSE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Tree Based Model</td>
+<td style="text-align: right;">0.000014</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Interaction Effects</td>
+<td style="text-align: right;">0.000030</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Boosted Model</td>
+<td style="text-align: right;">0.000163</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Linear Regression</td>
+<td style="text-align: right;">0.000248</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2nd Degree Polynomial</td>
+<td style="text-align: right;">0.000253</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="variance-model" class="slide level2">
+<h2>Variance Model</h2>
+<div class="cell">
+<div class="cell-output-display">
+<table>
+<caption>Variance Model Error</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">ModelType</th>
+<th style="text-align: right;">MSE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Tree Based Model</td>
+<td style="text-align: right;">2297.68</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Interaction Effects</td>
+<td style="text-align: right;">9020.97</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Boosted Model</td>
+<td style="text-align: right;">19311.89</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Linear Regression</td>
+<td style="text-align: right;">33003.25</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2nd Degree Polynomial</td>
+<td style="text-align: right;">35219.99</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="skewness-model" class="slide level2">
+<h2>Skewness Model</h2>
+<div class="cell">
+<div class="cell-output-display">
+<table>
+<caption>Variance Model Error</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">ModelType</th>
+<th style="text-align: right;">MSE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Tree Based Model</td>
+<td style="text-align: right;">2.296011e+11</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Interaction Effects</td>
+<td style="text-align: right;">7.797398e+11</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Boosted Model</td>
+<td style="text-align: right;">1.596803e+12</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Linear Regression</td>
+<td style="text-align: right;">2.128693e+12</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2nd Degree Polynomial</td>
+<td style="text-align: right;">2.390292e+12</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="kurtosis-model" class="slide level2">
+<h2>Kurtosis Model</h2>
+<div class="cell">
+<div class="cell-output-display">
+<table>
+<caption>Variance Model Error</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">ModelType</th>
+<th style="text-align: right;">MSE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Tree Based Model</td>
+<td style="text-align: right;">2.237499e+19</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Interaction Effects</td>
+<td style="text-align: right;">6.510998e+19</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Boosted Model</td>
+<td style="text-align: right;">1.106086e+20</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Linear Regression</td>
+<td style="text-align: right;">1.537524e+20</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2nd Degree Polynomial</td>
+<td style="text-align: right;">1.644865e+20</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </section>
 <section id="results-investigating-relationships" class="slide level2">
 <h2>Results: Investigating Relationships</h2>
-<p>For each response variable, the input variables have a different effect if we examine the regression output. For the:</p>
 <ul>
-<li><p>Mean</p>
+<li><p>Using the Linear Regression model with all three input variables, we see that their linear relationships are statistically significant implying their relationship with the response variable is linear.</p></li>
+<li><p>Some interesting findings include:</p>
 <ul>
-<li>As the size/density of the particles increase, the mean of the distribution increases as well.</li>
-<li>A medium/ high gravitational acceleration is associated with a lower mean</li>
-<li>A medium/high turbulence is associated with a lower mean.</li>
-</ul>
-<p>Mean is difficult to interpret as it is subjective based off of what coordinates one is using. Therefore, the other moments will be more exciting to find connections between.</p></li>
-<li><p>Variance</p>
+<li><p>Medium/high turbulence is associated with lower variance and skewness of the particle clustering distribution.</p>
 <ul>
-<li><p>As the size/density of particles increase, the variance of the particle clustering distribution increases as well. This makes sense as larger/more dense particles are less affected by gravity and other forces and are more associated with their beginning positions.</p></li>
-<li><p>Medium/high turbulence is associated with lower variance of the particle clustering distribution. This also intuitively makes sense as when there is more turbulence, particles are more likely to hit each other resulting in more similar interactions between particles. As the law of large numbers claims, large numbers of interactions should move particle distributions towards the mean thus reducing its variance.</p></li>
-<li><p>Interestingly medium gravity decreases the variance of the particle clustering distribution, while infinite gravity also decreases the variance but not as much as compared to medium turbulence. This may be a product on what exactly “infinite” gravity is and how it is used in the numeric solvers to get particle clusters.</p></li>
+<li>Scientifically, this makes logical sense because higher fluid turbulence would cause the particles to interact more and draw more closely to the mean, ultimately decreasing the skew and variance of the distribution.</li>
 </ul></li>
-<li><p>Skewness</p>
-<ul>
-<li><p>As Stokes number (the particles’ size/density) increases, we expect the skew of the spatial distribution and clustering of particles to increase.</p></li>
-<li><p>As Reynolds number (fluid turbulence) increases from low to medium, low to high, and medium to high, we expect the skew of the spatial distribution and clustering of particles to decrease. Scientifically, this makes logical sense because higher fluid turbulence would cause the particles to interact more and draw more closely to the mean, ultimately decreasing the skew of the distribution.</p></li>
-<li><p>Moving from a low Froude number to a medium or infinite Froude number, we expect the skew of the spatial distribution to decrease as well. However, we expect the decrease to be greater moving from low to medium Fr than from low to infinite Fr.</p></li>
-</ul></li>
-<li><p>Kurtosis</p>
-<ul>
-<li><p>We see practically the same relationships between each of St, Re, and Fr with kurtosis as we did with skew</p></li>
-<li><p>As Stokes number increases, we expect the kurtosis of the spatial distribution and clustering of particles to increase.</p></li>
-<li><p>As Reynolds number increases, we expect the kurtosis to decrease.</p></li>
-<li><p>We also see the same relationship with Froude number, as we expect the kurtosis of the distribution to decrease when moving from low to infinite Fr, but increase when moving from medium to infinite Fr.</p></li>
-<li><p>These results are also intuitively logical, since a high Reynolds number will likely cause the particles to be centered closer around the mean, thus the distribution would have less fat tails. The similar, odd relationship between Froude number with both skew and kurtosis could be due to the fact that it is not quite possible to interpret infinite gravitational acceleration and what the repercussions of that would be in terms of the particle clustering distribution.</p></li>
 </ul></li>
 </ul>
 </section>
 <section id="conclusion" class="slide level2">
 <h2>Conclusion</h2>
 <h4 id="future-investigations">Future Investigations</h4>
-<p>This short report briefly investigated “the most important unsolved problem of classical physics”, and because of its brevity most likely did not add anything significant to field of turbulence. Yet, it did open the researchers mind into what can and should be explored in this field’s cross with machine learning. It is important to find a good predictive model to ease the burden of the computationally expensive numeric solvers which output the data. However, if possible it would be helpful to see the relationship between Froude’s and Reynold’s number when it is continuous like Stoke’s number. It is difficult to only have three different values for Froude’s number and Reynold’s number, especially when one is <code>Inf</code>.</p>
+<ul>
+<li><p>This short report briefly investigated “the most important unsolved problem of classical physics”, and because of its brevity most likely did not add anything significant to field of turbulence.</p></li>
+<li><p>Yet, it did open the researchers mind into what can and should be explored in this field’s cross with machine learning.</p></li>
+<li><p>If possible it would be helpful to see the relationship between Froude’s and Reynold’s number when it is continuous like Stoke’s number.</p></li>
+<li><p>In addition, it would be interesting to measure the particle distribution in a different fashion than it’s moments. What if we took a picture of the particles and used Constitutional Neural Networks?</p></li>
+</ul>
 <div class="footer footer-default">
 
 </div>
