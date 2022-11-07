@@ -326,3 +326,5 @@ ModelMetricsMoment2 |> arrange(MSE) |> slice(1) |> pull(ModelType)
 ModelMetricsMoment3 |> arrange(MSE) |> slice(1) |> pull(ModelType)
 ModelMetricsMoment4 |> arrange(MSE) |> slice(1) |> pull(ModelType)
 ```
+
+The final model selected for predicting all four moments is our tree-based model. This is the model that has the lowest MSE for mean, variance, skew, and kurtosis. The tree-based model makes for interpretable model for a tricky set of data which included only one quantitative predictor (Stokes number) and two factor variables (Reynolds number and Frouds number). Our only fear is that this tree-based model might be prone to overfitting to the training data, and perhaps would have a high test error. However, we believe that due to the simplicity of the training data combined with having the lowest training MSE relative to our other models that the tree-based model serves as the best predictor of the first four central moments of particle cluster volume.  
