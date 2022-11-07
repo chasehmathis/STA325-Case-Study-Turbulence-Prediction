@@ -365,16 +365,12 @@ ModelMetricsMoment4 <- tribble(~ModelType, ~MSE,
                         "2nd Degree Polynomial", MSE_Poly_Kurt,
                         "Interaction Effects", MSE_Inter_Kurt,
                         "Tree Based Model", MSE_Tree_kurt,
-<<<<<<< Updated upstream
                         "Boosted Model", MSE_Boost_kurt) 
-```
-=======
-                        "Boosted Model", MSE_Boost_kurt)
 ModelMetricsMoment1 %>% kable(digits = 6, caption = "Mean")
 ModelMetricsMoment2 %>% kable(digits = 2, caption = "Variance")
 ModelMetricsMoment3 %>% kable(digits = 2, caption = "Skew")
 ModelMetricsMoment4 %>% kable(digits = 2, caption = "Kurtosis")
->>>>>>> Stashed changes
+```
 
 ```{r}
 results <- c(ModelMetricsMoment1 |> arrange(MSE) |> slice(1) |> pull(ModelType),
