@@ -66,9 +66,17 @@ We are given `r nrow(train) + nrow(test) + nrow(validation)` data points, but we
 
 ## More Details
 
-While cross-validation is a common technique to estimate the true test-error, we believe that it would be too computationally expensive to fit many different folds of all of the models we wish to predict. This is a shortcoming, and provides for future investigation.
+-   Cross Validation:
 
-As there are only three input variables, we will stray away from methods which penalize models with high numbers of correlated predictors i.e. (lasso/ridge regression). Our model is already sparse so there is there is no need to make it more sparse and there is low risk that the predictors are highly correlated.
+    -   While cross-validation is a common technique to estimate the true test-error, we believe that it would be too computationally expensive to fit many different folds of all of the models we wish to predict.
+
+    -   This is a shortcoming, and provides for future investigation.
+
+-   No Ridge and Lasso Regression?
+
+    -   As there are only three input variables, we will stay away from methods which penalize models with high numbers of correlated predictors i.e. (lasso/ridge regression).
+
+    -   Our model is already sparse so there is there is no need to make it more sparse and there is low risk that the predictors are highly correlated.
 
 ```{r}
 #| output: false
@@ -143,7 +151,8 @@ SLRModelMetrics |>
   kable(caption = "Mean Squared Error using Simple Linear Regression")
 ```
 
-It is clear looking at the MSEs of the moment that the using a Simple Linear Regression model to predict anything but the `mean` is not a good idea as the performance is not good, with increasingly high MSEs for each moment. Nonetheless, it serves as a good baseline for assessing further complex models.
+-   It is clear looking at the MSEs of the moment that the using a Simple Linear Regression model to predict anything but the `mean` is not a good idea.
+-   Nonetheless, it serves as a good baseline for assessing further complex models.
 
 ## Polynomials
 
@@ -304,7 +313,6 @@ MSE_Boost_kurt <- sum((yhat - centralVal$kurtosis)^2)/nrow(centralVal)
 
 ## Results: Evaluating Our Model
 
-
 ```{r}
 #| echo: false
 ModelMetricsMoment1 <- tribble(~ModelType, ~MSE,
@@ -312,25 +320,26 @@ ModelMetricsMoment1 <- tribble(~ModelType, ~MSE,
                         "2nd Degree Polynomial", MSE_Poly_Mean,
                         "Interaction Effects", MSE_Inter_Mean,
                         "Tree Based Model", MSE_Tree_mean,
-                        "Boosted Model", MSE_Boost_mean) 
+                        "Boosted Model", MSE_Boost_mean) |> arrange(MSE)
 ModelMetricsMoment2 <- tribble(~ModelType, ~MSE,
                         "Linear Regression", MSE_SLR_Var,
                         "2nd Degree Polynomial", MSE_Poly_Var,
                         "Interaction Effects", MSE_Inter_Var,
                         "Tree Based Model", MSE_Tree_var,
-                        "Boosted Model", MSE_Boost_var) 
+                        "Boosted Model", MSE_Boost_var) |> arrange(MSE)
 ModelMetricsMoment3 <- tribble(~ModelType, ~MSE,
                         "Linear Regression", MSE_SLR_Skew,
                         "2nd Degree Polynomial", MSE_Poly_Skew,
                         "Interaction Effects", MSE_Inter_Skew,
                         "Tree Based Model", MSE_Tree_skew,
-                        "Boosted Model", MSE_Boost_skew) 
+                        "Boosted Model", MSE_Boost_skew) |> arrange(MSE)
 ModelMetricsMoment4 <- tribble(~ModelType, ~MSE,
                         "Linear Regression", MSE_SLR_Kurt,
                         "2nd Degree Polynomial", MSE_Poly_Kurt,
                         "Interaction Effects", MSE_Inter_Kurt,
                         "Tree Based Model", MSE_Tree_kurt,
-                        "Boosted Model", MSE_Boost_kurt)
+                        "Boosted Model", MSE_Boost_kurt) |> 
+  arrange(MSE)
 ```
 
 ```{r}
@@ -341,52 +350,52 @@ results <- c(ModelMetricsMoment1 |> arrange(MSE) |> slice(1) |> pull(ModelType),
 results
 ```
 
-Our final results of the MSE for each model for all of the four moments leads us to selecting the tree-based model. This is the model that has the lowest MSE for `mean`, `variance`, `skew`, and `kurtosis`. The tree-based model makes for interpretable model for a tricky set of data which included only one quantitative predictor (Stokes number) and two factor variables (Reynolds number and Frouds number). While the data supports us using a tree-based model, we understand that there comes some uncertainty with this model selection. We randomly sampled a validation set to test our error and if we sampled a different batch of data, a different model may have predicted better.
+-   Using our validation set hold out we can report the different MSE for different types of models
+
+-   Across the board, however, Tree Based Model predicted the best on the validation set
+
+## Mean Model
+
+```{r}
+ModelMetricsMoment1 %>% kable(digits = 6, caption = "Mean Model Error")
+```
+
+## Variance Model
+
+```{r}
+ModelMetricsMoment2 %>% kable(digits = 2, caption = "Variance Model Error")
+```
+
+## Skewness Model
+
+```{r}
+ModelMetricsMoment3 %>% kable(digits = 2, caption = "Variance Model Error")
+```
+
+## Kurtosis Model
+
+```{r}
+ModelMetricsMoment4 %>% kable(digits = 2, caption = "Variance Model Error")
+```
 
 ## Results: Investigating Relationships
 
-For each response variable, the input variables have a different effect if we examine the regression output. For the:
+-   Using the Linear Regression model with all three input variables, we see that their linear relationships are statistically significant implying their relationship with the response variable is linear.
 
--   Mean
+-   Some interesting findings include:
 
-    -   As the size/density of the particles increase, the mean of the distribution increases as well.
-    -   A medium/ high gravitational acceleration is associated with a lower mean
-    -   A medium/high turbulence is associated with a lower mean.
+    -   Medium/high turbulence is associated with lower variance and skewness of the particle clustering distribution.
 
-    Mean is difficult to interpret as it is subjective based off of what coordinates one is using. Therefore, the other moments will be more exciting to find connections between.
-
--   Variance
-
-    -   As the size/density of particles increase, the variance of the particle clustering distribution increases as well. This makes sense as larger/more dense particles are less affected by gravity and other forces and are more associated with their beginning positions.
-
-    -   Medium/high turbulence is associated with lower variance of the particle clustering distribution. This also intuitively makes sense as when there is more turbulence, particles are more likely to hit each other resulting in more similar interactions between particles. As the law of large numbers claims, large numbers of interactions should move particle distributions towards the mean thus reducing its variance.
-
-    -   Interestingly medium gravity decreases the variance of the particle clustering distribution, while infinite gravity also decreases the variance but not as much as compared to medium turbulence. This may be a product on what exactly "infinite" gravity is and how it is used in the numeric solvers to get particle clusters.
-
--   Skewness
-
-    -   As Stokes number (the particles' size/density) increases, we expect the skew of the spatial distribution and clustering of particles to increase.
-
-    -   As Reynolds number (fluid turbulence) increases from low to medium, low to high, and medium to high, we expect the skew of the spatial distribution and clustering of particles to decrease. Scientifically, this makes logical sense because higher fluid turbulence would cause the particles to interact more and draw more closely to the mean, ultimately decreasing the skew of the distribution.
-
-    -   Moving from a low Froude number to a medium or infinite Froude number, we expect the skew of the spatial distribution to decrease as well. However, we expect the decrease to be greater moving from low to medium Fr than from low to infinite Fr.
-
--   Kurtosis
-
-    -   We see practically the same relationships between each of St, Re, and Fr with kurtosis as we did with skew
-
-    -   As Stokes number increases, we expect the kurtosis of the spatial distribution and clustering of particles to increase.
-
-    -   As Reynolds number increases, we expect the kurtosis to decrease.
-
-    -   We also see the same relationship with Froude number, as we expect the kurtosis of the distribution to decrease when moving from low to infinite Fr, but increase when moving from medium to infinite Fr.
-
-    -   These results are also intuitively logical, since a high Reynolds number will likely cause the particles to be centered closer around the mean, thus the distribution would have less fat tails. The similar, odd relationship between Froude number with both skew and kurtosis could be due to the fact that it is not quite possible to interpret infinite gravitational acceleration and what the repercussions of that would be in terms of the particle clustering distribution.
+        -   Scientifically, this makes logical sense because higher fluid turbulence would cause the particles to interact more and draw more closely to the mean, ultimately decreasing the skew and variance of the distribution.
 
 ## Conclusion
 
 #### Future Investigations
 
-This short report briefly investigated "the most important unsolved problem of classical physics", and because of its brevity most likely did not add anything significant to field of turbulence. Yet, it did open the researchers mind into what can and should be explored in this field's cross with machine learning. It is important to find a good predictive model to ease the burden of the computationally expensive numeric solvers which output the data. However, if possible it would be helpful to see the relationship between Froude's and Reynold's number when it is continuous like Stoke's number. It is difficult to only have three different values for Froude's number and Reynold's number, especially when one is `Inf`.
+-   This short report briefly investigated "the most important unsolved problem of classical physics", and because of its brevity most likely did not add anything significant to field of turbulence.
 
+-   Yet, it did open the researchers mind into what can and should be explored in this field's cross with machine learning.
 
+-   If possible it would be helpful to see the relationship between Froude's and Reynold's number when it is continuous like Stoke's number.
+
+-   In addition, it would be interesting to measure the particle distribution in a different fashion than it's moments. What if we took a picture of the particles and used Constitutional Neural Networks?
