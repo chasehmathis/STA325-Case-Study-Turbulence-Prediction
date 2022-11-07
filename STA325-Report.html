@@ -79,15 +79,17 @@ ul.task-list{list-style: none;}
 <div class="cell">
 
 </div>
-<p>We are given 89 data points, but we only use 66 data points for training our model as to not overfit our model. We will examine numerous different types of models including:</p>
+<p>We are given 112 data points, but we only use 89 data points for training our model as to not overfit our model. We will examine numerous different types of models including:</p>
 <ul>
 <li>A simple Linear Regression Model</li>
 <li>More Complex Non-Linear Regression Model</li>
 <li>Tree Based Model</li>
 <li>Boosted Tree Model</li>
 </ul>
-<p>The data has <code>4</code> response variables and <code>3</code> input variables. Each output variable is a raw moment of a final turbulent distribution. We’ve converted the raw moments to central moments so as for better interpret ability. We keep the first raw moment, however.</p>
-<p>As there are only three input variables, we will stray away from methods which look for sparse models. Our model is, already, sparse so there is no need to make it more sparse.</p>
+<p>In addition to our splitting of data for training and testing, we further split our training data where 66 data points are used for training and 23 data points are used for selecting our best model. When fitting the models mentioned above, we benchmark their predictive performance on the validation set.</p>
+<p>While cross-validation is a common technique to estimate the true test-error, we believed that it would be too computationally expensive to fit many different folds of all of the models we wish to predict. This is a shortcoming, and provides for future investigation.</p>
+<p>The data has <code>4</code> response variables and <code>3</code> input variables. Each output variable is a raw moment of a final turbulent distribution. We’ve converted the raw moments to central moments so as for better interpretability. We keep the first raw moment, however, as the first central moment is 0.</p>
+<p>As there are only three input variables, we will stray away from methods which penalize models with high numbers of correlated predictors i.e.&nbsp;(lasso/ridge regression). Our model is already sparse so there is there is no need to make it more sparse and there is low risk that the predictors are highly correlated.</p>
 <section id="quick-transformations-for-our-input-variables" class="level4">
 <h4 class="anchored" data-anchor-id="quick-transformations-for-our-input-variables">Quick Transformations for our Input Variables</h4>
 <div class="cell">
@@ -161,6 +163,7 @@ ul.task-list{list-style: none;}
 </section>
 <section id="polynomials" class="level3">
 <h3 class="anchored" data-anchor-id="polynomials">Polynomials</h3>
+<p>We conducted cross-validation to determine the best fitting degree-polynomial for Stokes number. Our chose polynomial models will include some degree polynomial of Stokes number, while adding Frouds and Reynolds number as well. Since these variables are factors, we cannot make them polynomials, however, we still include these variables in our model since we decided against sparse models since we only start with three predictors, and all three predictors have a significant effect on the first four moments of particle cluster volume.</p>
 <div class="cell">
 
 </div>
@@ -188,6 +191,7 @@ ul.task-list{list-style: none;}
 </section>
 <section id="interaction-effects" class="level3">
 <h3 class="anchored" data-anchor-id="interaction-effects">Interaction Effects</h3>
+<p>We check to see if there are significant interaction effects between the three predictors, and then construct a model with these interaction effects. We expect there to be significant interaction effects between the three predictors due to the similarity between the three numbers. For example, we expect Reynolds number (fluid turbulence) to have some relationship to Frouds number (gravitational acceleratio).</p>
 <div class="cell">
 
 </div>
@@ -195,8 +199,20 @@ ul.task-list{list-style: none;}
 <section id="trees" class="level3">
 <h3 class="anchored" data-anchor-id="trees">Trees</h3>
 <div class="cell">
-
+<div class="cell-output-display">
+<p><img src="STA325-Report_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
 </div>
+<div class="cell-output-display">
+<p><img src="STA325-Report_files/figure-html/unnamed-chunk-16-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="STA325-Report_files/figure-html/unnamed-chunk-16-3.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="STA325-Report_files/figure-html/unnamed-chunk-16-4.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>We tested whether pruning our tree would help predictive performance, but found that it did not. Therefore, we left all our trees as fully grown trees shown above.</p>
 </section>
 <section id="boosting" class="level3">
 <h3 class="anchored" data-anchor-id="boosting">Boosting</h3>
@@ -221,7 +237,7 @@ ul.task-list{list-style: none;}
 <pre><code>[1] "Tree Based Model"</code></pre>
 </div>
 </div>
-<p>The final model selected for predicting all four moments is our tree-based model. This is the model that has the lowest MSE for mean, variance, skew, and kurtosis. The tree-based model makes for interpretable model for a tricky set of data which included only one quantitative predictor (Stokes number) and two factor variables (Reynolds number and Frouds number). Our only fear is that this tree-based model might be prone to overfitting to the training data, and perhaps would have a high test error. However, we believe that due to the simplicity of the training data combined with having the lowest training MSE relative to our other models that the tree-based model serves as the best predictor of the first four central moments of particle cluster volume.</p>
+<p>The final model selected for predicting all four moments is our tree-based model. This is the model that has the lowest MSE for <code>mean</code>, <code>variance</code>, <code>skew</code>, and <code>kurtosis</code>. The tree-based model makes for interpretable model for a tricky set of data which included only one quantitative predictor (Stokes number) and two factor variables (Reynolds number and Frouds number). While the data supports us using a tree-based model, we understand that there comes some uncertainty with this model selection. We randomly sampled a validation set to test our error and if we sampled a different batch of data, a different model may have predicted better.</p>
 </section>
 
 </main>
