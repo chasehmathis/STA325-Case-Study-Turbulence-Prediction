@@ -399,6 +399,10 @@ Our final results of the MSE for each model for all of the four moments leads us
 
 ## Conclusion
 
+### Future Investigations
+
+This short report briefly investigated "the most important unsolved problem of classical physics", and because of its brevity most likely did not add anything significant to field of turbulence. Yet, it did open the researchers mind into what can and should be explored in this field's cross with machine learning. It is important to find a good predictive model to ease the burden of the computationally expensive numeric solvers which output the data. However, if possible it would be helpful to see the relationship between Froude's and Reynold's number when it is continuous like Stoke's number. It is difficult to only have three different values for Froude's number and Reynold's number, especially when one is `Inf`.
+
 ### Investigating Relationships
 
 ::: {layout-nrow="2"}
@@ -441,9 +445,9 @@ For each response variable, the input variables have a different effect if we ex
 
     -   As the size/density of particles increase, the variance of the particle clustering distribution increases as well. This makes sense as larger/more dense particles are less affected by gravity and other forces and are more associated with their beginning positions.
 
-    -   A medium/high gravitational acceleration is associated with lower variance of the particle clustering distribution. This also intuitively makes sense as when there is extremely high gravity, everything will tend to stick together making a distribution with zero variance.
+    -   Medium/high turbulence is associated with lower variance of the particle clustering distribution. This also intuitively makes sense as when there is more turbulence, particles are more likely to hit each other resulting in more similar interactions between particles. As the law of large numbers claims, large numbers of interactions should move particle distributions towards the mean thus reducing its variance.
 
-    -   Interestingly medium turbulence decreases the variance of the particle clustering distribution, while infinite turbulence also decreases the variance but not as much as compared to medium turbulence.
+    -   Interestingly medium gravidty decreases the variance of the particle clustering distribution, while infinite gravity also decreases the variance but not as much as compared to medium turbulence. This may be a product on what exactly "infinite" gravity is and how it is used in the numeric solvers to get particle clusters.
 
 -   Skewness
 
