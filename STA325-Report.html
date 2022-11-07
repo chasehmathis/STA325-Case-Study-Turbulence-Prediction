@@ -63,7 +63,7 @@ ul.task-list{list-style: none;}
 
 <section id="introduction" class="level2">
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
-<p>Nobel Prize winning Physicist Richard Feynman said that turbulence was “the most important unsolved problem of classical physics”. Although, we still unexpectedly feel bumps on airplines and have trouble truly predicting where a Hurricane will strike land, we hope to add to the field of research studying how to model turbulent systems. We position our research in two key areas:</p>
+<p>Nobel Prize winning Physicist Richard Feynman said that turbulence was “the most important unsolved problem of classical physics”. Although, we still unexpectedly feel bumps on airplanes and have trouble truly predicting where a Hurricane will strike land, we hope to add to the field of research studying how to model turbulent systems. We position our research in two key areas:</p>
 <ol type="1">
 <li>Prediction</li>
 <li>Statistical Inference</li>
@@ -81,13 +81,13 @@ ul.task-list{list-style: none;}
 </div>
 <p>We are given 112 data points, but we only use 89 data points for training our model as to not overfit our model. We will examine numerous different types of models including:</p>
 <ul>
-<li>A simple Linear Regression Model</li>
+<li>A Simple Linear Regression Model</li>
 <li>More Complex Non-Linear Regression Model</li>
 <li>Tree Based Model</li>
 <li>Boosted Tree Model</li>
 </ul>
 <p>In addition to our splitting of data for training and testing, we further split our training data where 66 data points are used for training and 23 data points are used for selecting our best model. When fitting the models mentioned above, we benchmark their predictive performance on the validation set.</p>
-<p>While cross-validation is a common technique to estimate the true test-error, we believed that it would be too computationally expensive to fit many different folds of all of the models we wish to predict. This is a shortcoming, and provides for future investigation.</p>
+<p>While cross-validation is a common technique to estimate the true test-error, we believe that it would be too computationally expensive to fit many different folds of all of the models we wish to predict. This is a shortcoming, and provides for future investigation.</p>
 <p>The data has <code>4</code> response variables and <code>3</code> input variables. Each output variable is a raw moment of a final turbulent distribution. We’ve converted the raw moments to central moments so as for better interpretability. We keep the first raw moment, however, as the first central moment is 0.</p>
 <p>As there are only three input variables, we will stray away from methods which penalize models with high numbers of correlated predictors i.e.&nbsp;(lasso/ridge regression). Our model is already sparse so there is there is no need to make it more sparse and there is low risk that the predictors are highly correlated.</p>
 <section id="quick-transformations-for-our-input-variables" class="level4">
@@ -97,9 +97,9 @@ ul.task-list{list-style: none;}
 <table class="table table-sm table-striped">
 <thead>
 <tr class="header">
-<th style="text-align: right;">Reynold’s Number</th>
+<th style="text-align: right;">Reynolds Number</th>
 <th style="text-align: right;">Count</th>
-<th style="text-align: right;">Freyman’s Number</th>
+<th style="text-align: right;">Froude Number</th>
 <th style="text-align: right;">Count</th>
 </tr>
 </thead>
@@ -126,7 +126,7 @@ ul.task-list{list-style: none;}
 </table>
 </div>
 </div>
-<p>Reynold’s and Freyman’s numbers are non-continuous as there is only three buckets for the numbers. Therefore I am going to make them a categorical variable to help interpretability.</p>
+<p>Reynolds and Froude numbers are non-continuous as there is only three buckets for the numbers. Therefore, we are going to make them a categorical variable to help interpretability.</p>
 <div class="cell">
 
 </div>
@@ -159,11 +159,11 @@ ul.task-list{list-style: none;}
 </table>
 </div>
 </div>
-<p>It is clear that the using a Simple Linear Regression model to predict anything but the <code>mean</code> is not a good idea as the performance is not good. Nonetheless it serves as a good baseline for predicting further complex models.</p>
+<p>It is clear looking at the MSEs of the moment that the using a Simple Linear Regression model to predict anything but the <code>mean</code> is not a good idea as the performance is not good, with increasingly high MSEs for each moment. Nonetheless, it serves as a good baseline for assessing further complex models.</p>
 </section>
 <section id="polynomials" class="level3">
 <h3 class="anchored" data-anchor-id="polynomials">Polynomials</h3>
-<p>We conducted cross-validation to determine the best fitting degree-polynomial for Stokes number. Our chose polynomial models will include some degree polynomial of Stokes number, while adding Frouds and Reynolds number as well. Since these variables are factors, we cannot make them polynomials, however, we still include these variables in our model since we decided against sparse models since we only start with three predictors, and all three predictors have a significant effect on the first four moments of particle cluster volume.</p>
+<p>We conducted cross-validation to determine the best fitting degree-polynomial for Stokes number. Our chosen polynomial models will include some degree polynomial of Stokes number, while adding Froude and Reynolds number as well. Since these variables are factors, we cannot make them polynomials, however, we still include these variables in our model since we decided against sparse models since we only start with three predictors, and all three predictors have a significant effect on the first four moments of particle cluster volume.</p>
 <div class="cell">
 
 </div>
@@ -176,6 +176,7 @@ ul.task-list{list-style: none;}
 <div class="cell">
 
 </div>
+<p>The optimal degree polynomials for predicting mean, variance, skew, and kurtosis are all 2 for Stokes Number.</p>
 <div class="cell">
 
 </div>
@@ -188,28 +189,45 @@ ul.task-list{list-style: none;}
 <div class="cell">
 
 </div>
+<p>Using 2nd degree polynomial models while also predicting the moments with Froude and Reynolds numbers, we get lower MSEs for all four moments, however these MSEs are still relatively high, indicating that using polynomials would also not be the best way of predicting the moments.</p>
 </section>
 <section id="interaction-effects" class="level3">
 <h3 class="anchored" data-anchor-id="interaction-effects">Interaction Effects</h3>
-<p>We check to see if there are significant interaction effects between the three predictors, and then construct a model with these interaction effects. We expect there to be significant interaction effects between the three predictors due to the similarity between the three numbers. For example, we expect Reynolds number (fluid turbulence) to have some relationship to Frouds number (gravitational acceleratio).</p>
+<p>We check to see if there are significant interaction effects between the three predictors, and then construct a model with these interaction effects. We expect there to be significant interaction effects between the three predictors due to the similarity between the three numbers. For example, we expect Reynolds number (fluid turbulence) to have some relationship with Frouds number (gravitational acceleration).</p>
 <div class="cell">
 
 </div>
 </section>
 <section id="trees" class="level3">
 <h3 class="anchored" data-anchor-id="trees">Trees</h3>
+<p>Finally, we construct a tree-based model and a boosted model.</p>
 <div class="cell">
-<div class="cell-output-display">
-<p><img src="STA325-Report_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
+
 </div>
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
 <div class="cell-output-display">
-<p><img src="STA325-Report_files/figure-html/unnamed-chunk-16-2.png" class="img-fluid" width="672"></p>
+<p><img src="STA325-Report_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
 </div>
-<div class="cell-output-display">
-<p><img src="STA325-Report_files/figure-html/unnamed-chunk-16-3.png" class="img-fluid" width="672"></p>
 </div>
+<div class="cell quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
 <div class="cell-output-display">
-<p><img src="STA325-Report_files/figure-html/unnamed-chunk-16-4.png" class="img-fluid" width="672"></p>
+<p><img src="STA325-Report_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</div>
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div class="cell-output-display">
+<p><img src="STA325-Report_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div class="cell-output-display">
+<p><img src="STA325-Report_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
 </div>
 </div>
 <p>We tested whether pruning our tree would help predictive performance, but found that it did not. Therefore, we left all our trees as fully grown trees shown above.</p>
@@ -221,23 +239,422 @@ ul.task-list{list-style: none;}
 </div>
 </section>
 </section>
-<section id="evaluating-our-models" class="level2">
-<h2 class="anchored" data-anchor-id="evaluating-our-models">Evaluating Our Models</h2>
+<section id="results-evaluating-our-model-investigating-relationsips" class="level2">
+<h2 class="anchored" data-anchor-id="results-evaluating-our-model-investigating-relationsips">Results: Evaluating Our Model &amp; Investigating Relationsips</h2>
+<div class="cell">
+
+</div>
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<caption>Mean</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">ModelType</th>
+<th style="text-align: right;">MSE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Linear Regression</td>
+<td style="text-align: right;">0.000248</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2nd Degree Polynomial</td>
+<td style="text-align: right;">0.000253</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Interaction Effects</td>
+<td style="text-align: right;">0.000030</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Tree Based Model</td>
+<td style="text-align: right;">0.000014</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Boosted Model</td>
+<td style="text-align: right;">0.000163</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<caption>Variance</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">ModelType</th>
+<th style="text-align: right;">MSE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Linear Regression</td>
+<td style="text-align: right;">33003.25</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2nd Degree Polynomial</td>
+<td style="text-align: right;">35219.99</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Interaction Effects</td>
+<td style="text-align: right;">9020.97</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Tree Based Model</td>
+<td style="text-align: right;">2297.68</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Boosted Model</td>
+<td style="text-align: right;">19311.89</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<caption>Skew</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">ModelType</th>
+<th style="text-align: right;">MSE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Linear Regression</td>
+<td style="text-align: right;">2.128693e+12</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2nd Degree Polynomial</td>
+<td style="text-align: right;">2.390292e+12</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Interaction Effects</td>
+<td style="text-align: right;">7.797398e+11</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Tree Based Model</td>
+<td style="text-align: right;">2.296011e+11</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Boosted Model</td>
+<td style="text-align: right;">1.596803e+12</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<caption>Kurtosis</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">ModelType</th>
+<th style="text-align: right;">MSE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Linear Regression</td>
+<td style="text-align: right;">1.537524e+20</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2nd Degree Polynomial</td>
+<td style="text-align: right;">1.644865e+20</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Interaction Effects</td>
+<td style="text-align: right;">6.510998e+19</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Tree Based Model</td>
+<td style="text-align: right;">2.237499e+19</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Boosted Model</td>
+<td style="text-align: right;">1.106086e+20</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "Tree Based Model"</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "Tree Based Model"</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "Tree Based Model"</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "Tree Based Model"</code></pre>
+<pre><code>[1] "Tree Based Model" "Tree Based Model" "Tree Based Model" "Tree Based Model"</code></pre>
 </div>
 </div>
-<p>The final model selected for predicting all four moments is our tree-based model. This is the model that has the lowest MSE for <code>mean</code>, <code>variance</code>, <code>skew</code>, and <code>kurtosis</code>. The tree-based model makes for interpretable model for a tricky set of data which included only one quantitative predictor (Stokes number) and two factor variables (Reynolds number and Frouds number). While the data supports us using a tree-based model, we understand that there comes some uncertainty with this model selection. We randomly sampled a validation set to test our error and if we sampled a different batch of data, a different model may have predicted better.</p>
+<p>Our final results of the MSE for each model for all of the four moments leads us to selecting the tree-based model. This is the model that has the lowest MSE for <code>mean</code>, <code>variance</code>, <code>skew</code>, and <code>kurtosis</code>. The tree-based model makes for interpretable model for a tricky set of data which included only one quantitative predictor (Stokes number) and two factor variables (Reynolds number and Frouds number). While the data supports us using a tree-based model, we understand that there comes some uncertainty with this model selection. We randomly sampled a validation set to test our error and if we sampled a different batch of data, a different model may have predicted better.</p>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<section id="investigating-relationships" class="level3">
+<h3 class="anchored" data-anchor-id="investigating-relationships">Investigating Relationships</h3>
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<caption>Mean Regression Model</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">Estimate</th>
+<th style="text-align: right;">Std. Error</th>
+<th style="text-align: right;">t value</th>
+<th style="text-align: right;">Pr(&gt;|t|)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">0.1045852</td>
+<td style="text-align: right;">0.0047114</td>
+<td style="text-align: right;">22.198205</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">St</td>
+<td style="text-align: right;">0.0162280</td>
+<td style="text-align: right;">0.0024638</td>
+<td style="text-align: right;">6.586698</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ReMedium</td>
+<td style="text-align: right;">-0.1085693</td>
+<td style="text-align: right;">0.0044004</td>
+<td style="text-align: right;">-24.672325</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ReHigh</td>
+<td style="text-align: right;">-0.1069065</td>
+<td style="text-align: right;">0.0057140</td>
+<td style="text-align: right;">-18.709533</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">FrMedium</td>
+<td style="text-align: right;">-0.0100684</td>
+<td style="text-align: right;">0.0050697</td>
+<td style="text-align: right;">-1.985998</td>
+<td style="text-align: right;">0.0516079</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">FrInfinity</td>
+<td style="text-align: right;">-0.0134807</td>
+<td style="text-align: right;">0.0047274</td>
+<td style="text-align: right;">-2.851604</td>
+<td style="text-align: right;">0.0059571</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<caption>Variance Regression Model</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">Estimate</th>
+<th style="text-align: right;">Std. Error</th>
+<th style="text-align: right;">t value</th>
+<th style="text-align: right;">Pr(&gt;|t|)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">397.65436</td>
+<td style="text-align: right;">62.67941</td>
+<td style="text-align: right;">6.344258</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">St</td>
+<td style="text-align: right;">56.96925</td>
+<td style="text-align: right;">32.77714</td>
+<td style="text-align: right;">1.738079</td>
+<td style="text-align: right;">0.0873270</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ReMedium</td>
+<td style="text-align: right;">-231.42216</td>
+<td style="text-align: right;">58.54224</td>
+<td style="text-align: right;">-3.953080</td>
+<td style="text-align: right;">0.0002061</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ReHigh</td>
+<td style="text-align: right;">-288.43506</td>
+<td style="text-align: right;">76.01755</td>
+<td style="text-align: right;">-3.794322</td>
+<td style="text-align: right;">0.0003468</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">FrMedium</td>
+<td style="text-align: right;">-332.97442</td>
+<td style="text-align: right;">67.44543</td>
+<td style="text-align: right;">-4.936945</td>
+<td style="text-align: right;">0.0000067</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">FrInfinity</td>
+<td style="text-align: right;">-267.52677</td>
+<td style="text-align: right;">62.89184</td>
+<td style="text-align: right;">-4.253760</td>
+<td style="text-align: right;">0.0000748</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<caption>Skewness Regression Model</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">Estimate</th>
+<th style="text-align: right;">Std. Error</th>
+<th style="text-align: right;">t value</th>
+<th style="text-align: right;">Pr(&gt;|t|)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">3220094.7</td>
+<td style="text-align: right;">533351.8</td>
+<td style="text-align: right;">6.037468</td>
+<td style="text-align: right;">0.0000001</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">St</td>
+<td style="text-align: right;">528559.1</td>
+<td style="text-align: right;">278907.4</td>
+<td style="text-align: right;">1.895106</td>
+<td style="text-align: right;">0.0628992</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ReMedium</td>
+<td style="text-align: right;">-1906707.5</td>
+<td style="text-align: right;">498147.8</td>
+<td style="text-align: right;">-3.827594</td>
+<td style="text-align: right;">0.0003112</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ReHigh</td>
+<td style="text-align: right;">-2355239.4</td>
+<td style="text-align: right;">646848.8</td>
+<td style="text-align: right;">-3.641097</td>
+<td style="text-align: right;">0.0005672</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">FrMedium</td>
+<td style="text-align: right;">-2745078.3</td>
+<td style="text-align: right;">573906.9</td>
+<td style="text-align: right;">-4.783142</td>
+<td style="text-align: right;">0.0000116</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">FrInfinity</td>
+<td style="text-align: right;">-2206451.9</td>
+<td style="text-align: right;">535159.5</td>
+<td style="text-align: right;">-4.122980</td>
+<td style="text-align: right;">0.0001167</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<caption>Kurtosis Regression Model</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">Estimate</th>
+<th style="text-align: right;">Std. Error</th>
+<th style="text-align: right;">t value</th>
+<th style="text-align: right;">Pr(&gt;|t|)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">26325470358</td>
+<td style="text-align: right;">4535742950</td>
+<td style="text-align: right;">5.804004</td>
+<td style="text-align: right;">0.0000003</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">St</td>
+<td style="text-align: right;">4828236326</td>
+<td style="text-align: right;">2371890599</td>
+<td style="text-align: right;">2.035607</td>
+<td style="text-align: right;">0.0462131</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ReMedium</td>
+<td style="text-align: right;">-15851044054</td>
+<td style="text-align: right;">4236359847</td>
+<td style="text-align: right;">-3.741666</td>
+<td style="text-align: right;">0.0004112</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ReHigh</td>
+<td style="text-align: right;">-19414518255</td>
+<td style="text-align: right;">5500946304</td>
+<td style="text-align: right;">-3.529305</td>
+<td style="text-align: right;">0.0008067</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">FrMedium</td>
+<td style="text-align: right;">-22769502054</td>
+<td style="text-align: right;">4880632391</td>
+<td style="text-align: right;">-4.665277</td>
+<td style="text-align: right;">0.0000177</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">FrInfinity</td>
+<td style="text-align: right;">-18318122300</td>
+<td style="text-align: right;">4551115278</td>
+<td style="text-align: right;">-4.024974</td>
+<td style="text-align: right;">0.0001622</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<p>For each response variable, the input variables have a different effect. For the:</p>
+<ul>
+<li><p>Mean</p></li>
+<li><p>Variance</p></li>
+<li><p>Skewness</p></li>
+<li><p>Kurtosis</p></li>
+</ul>
+</section>
 </section>
 
 </main>
