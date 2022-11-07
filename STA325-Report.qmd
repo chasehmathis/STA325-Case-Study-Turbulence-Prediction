@@ -427,11 +427,23 @@ summary(SLRKurt)$coefficients |>
 ```
 :::
 
-For each response variable, the input variables have a different effect. For the:
+For each response variable, the input variables have a different effect if we examine the regression output. For the:
 
--   Means
+-   Mean
+
+    -   As the size/density of the particles increase, the mean of the distribution increases as well.
+    -   A medium/ high gravitational acceleration is associated with a lower mean
+    -   A medium/high initial turbulency is associated with a lower mean.
+
+    Mean is difficult to interpret as it is subjective based off of what coordinates one is using. Therefore, the other moments will be more exciting to find connections between.
 
 -   Variance
+
+    -   As the size/density of particles increase, the variance of the particle clustering distribution increases as well. This makes sense as larger/more dense particles are less affected by gravity and other forces and are more associated with their beginning positions.
+
+    -   A medium/high gravitational acceleration is associated with lower variance of the particle clustering distribution. This also intuitively makes sense as when there is extremely high gravity, everything will tend to stick together making a distribution with zero variance.
+
+    -   Interestingly medium turbulence decreases the variance of the particle clustering distribution, while infinite turbulence also decreases the variance but not as much as compared to medium turbulence.
 
 -   Skewness
 
