@@ -1,0 +1,392 @@
+---
+title: "STA325 Case Study"
+author: "Chase Mathis, Dillan Sant"
+format: revealjs
+execute: 
+  warning: false
+  echo: false
+editor: visual
+---
+
+## Introduction
+
+Nobel Prize winning Physicist Richard Feynman said that turbulence was "the most important unsolved problem of classical physics". Although, we still unexpectedly feel bumps on airplanes and have trouble truly predicting where a Hurricane will strike land, we hope to add to the field of research studying how to model turbulent systems. We position our research in two key areas:
+
+1.  Prediction
+2.  Statistical Inference
+
+## Methodology
+
+```{r}
+#| echo: false
+library(tidyverse) # datawrangling
+library(tidymodels) #modeling steps
+library(knitr) # nice output
+library(boot) # cv
+library(lmvar) # CV
+library(patchwork) # plots
+library(splines)
+library(tree) # trees
+
+ggplot2::theme_set(ggplot2::theme_minimal())
+
+train <- read_csv("data/data-train.csv")
+test <- read_csv("data/data-test.csv")
+#make a validation set for comparing models
+set.seed(123)
+split <- initial_split(train)
+train <- training(split)
+validation <- testing(split)
+```
+
+```{r}
+
+## mutate data so that we get central moments
+centralTrain <- train |> 
+  mutate(mean = R_moment_1,
+         variance = R_moment_2 - R_moment_1^2,
+         skewness = R_moment_3 -3*R_moment_1*R_moment_2 + 2*R_moment_1^3,
+         kurtosis = R_moment_4 - 4*R_moment_1*R_moment_3 + 6*R_moment_2*R_moment_1^2 - 3*R_moment_1^4) |> 
+  dplyr::select(-contains("R_"))
+
+centralVal <- validation |> 
+  mutate(mean = R_moment_1,
+         variance = R_moment_2 - R_moment_1^2,
+         skewness = R_moment_3 -3*R_moment_1*R_moment_2 + 2*R_moment_1^3,
+         kurtosis = R_moment_4 - 4*R_moment_1*R_moment_3 + 6*R_moment_2*R_moment_1^2 - 3*R_moment_1^4) |> 
+  dplyr::select(-contains("R_"))
+```
+
+We are given `r nrow(train) + nrow(test) + nrow(validation)` data points, but we only use `r nrow(train) + nrow(validation)` data points for training our model as to not overfit our model. We will examine numerous different types of models including:
+
+-   A Simple Linear Regression Model
+-   More Complex Non-Linear Regression Model
+-   Tree Based Model
+-   Boosted Tree Model
+
+## More Details
+
+While cross-validation is a common technique to estimate the true test-error, we believe that it would be too computationally expensive to fit many different folds of all of the models we wish to predict. This is a shortcoming, and provides for future investigation.
+
+As there are only three input variables, we will stray away from methods which penalize models with high numbers of correlated predictors i.e. (lasso/ridge regression). Our model is already sparse so there is there is no need to make it more sparse and there is low risk that the predictors are highly correlated.
+
+```{r}
+#| output: false
+#### Quick Transformations for our Input Variables
+
+centralTrain |> 
+  count(Re) |> 
+  bind_cols(centralTrain |> count(Fr)) |> 
+  kable(col.names = c("Reynolds Number", "Count", "Froude Number", "Count"))
+```
+
+```{r}
+centralTrain <- centralTrain |> 
+  mutate(Fr = case_when(
+    Fr < 0.3 ~ "Low",
+    Fr == 0.3 ~ "Medium",
+    Fr == Inf ~ "Infinity"
+  )) |> 
+  mutate(Fr = factor(Fr, levels = c("Low", "Medium", "Infinity")))
+
+centralTrain <- centralTrain %>%
+  mutate(Re = case_when(
+    Re == 398 ~ "High",
+    Re == 224 ~ "Medium",
+    Re == 90 ~ "Low")) %>%
+  mutate(Re = factor(Re, levels = c("Low", "Medium", "High")))
+
+centralVal <- centralVal |> 
+  mutate(Fr = case_when(
+    Fr < 0.3 ~ "Low",
+    Fr == 0.3 ~ "Medium",
+    Fr == Inf ~ "Infinity"
+  )) |> 
+  mutate(Fr = factor(Fr, levels = c("Low", "Medium", "Infinity")))
+
+centralVal <- centralVal %>%
+  mutate(Re = case_when(
+    Re == 398 ~ "High",
+    Re == 224 ~ "Medium",
+    Re == 90 ~ "Low")) %>%
+  mutate(Re = factor(Re, levels = c("Low", "Medium", "High")))
+```
+
+## Simple Linear Regression Benchmark
+
+```{r}
+#| label: Baseline-Model
+
+SLRMean <- lm(mean ~ St + Re + Fr, data = centralTrain)
+yhat <- predict(SLRMean, newdata = centralVal)
+MSE_SLR_Mean <- sum((yhat - centralVal$mean)^2)/nrow(centralVal)
+
+SLRVar <- lm(variance ~ St + Re + Fr, data = centralTrain)
+yhat <- predict(SLRVar, newdata = centralVal)
+MSE_SLR_Var <- sum((yhat - centralVal$variance)^2)/nrow(centralVal)
+
+SLRSkew <- lm(skewness ~ St + Re + Fr, data = centralTrain)
+yhat <- predict(SLRVar, newdata = centralVal)
+MSE_SLR_Skew <- sum((yhat - centralVal$skewness)^2)/nrow(centralVal)
+
+SLRKurt <- lm(kurtosis ~ St + Re + Fr, data = centralTrain)
+yhat <- predict(SLRKurt, newdata = centralVal)
+MSE_SLR_Kurt <- sum((yhat - centralVal$kurtosis)^2)/nrow(centralVal)
+```
+
+```{r}
+#| label: Model-Metrics-SLR
+
+SLRModelMetrics <- tribble(~Mean, ~Variance, ~Skewness, ~Kurtosis,
+                           MSE_SLR_Mean, MSE_SLR_Var, MSE_SLR_Skew, MSE_SLR_Kurt)
+SLRModelMetrics |> 
+  kable(caption = "Mean Squared Error using Simple Linear Regression")
+```
+
+It is clear looking at the MSEs of the moment that the using a Simple Linear Regression model to predict anything but the `mean` is not a good idea as the performance is not good, with increasingly high MSEs for each moment. Nonetheless, it serves as a good baseline for assessing further complex models.
+
+## Polynomials
+
+We conducted cross-validation to determine the best fitting degree-polynomial for Stokes number. Our chosen polynomial models will include some degree polynomial of Stokes number, while adding Froude and Reynolds number as well. Since these variables are factors, we cannot make them polynomials, however, we still include these variables in our model since we decided against sparse models since we only start with three predictors, and all three predictors have a significant effect on the first four moments of particle cluster volume.
+
+```{r, warning = FALSE}
+set.seed(1)
+cv_error <- rep(0,10)
+for(i in 1:10){
+  fit <- glm(mean ~ poly(St, i, raw = TRUE), data = centralTrain)
+  cv_error[i] <- cv.glm(centralTrain, fit, K = 10)$delta[1]
+}
+#p1 <- plot(cv_error, type = "b", xlab = "Degree (mean, St)")
+```
+
+```{r, warning = FALSE}
+set.seed(1)
+cv_error <- rep(0,10)
+for(i in 1:10){
+  fit <- glm(variance ~ poly(St, i, raw = TRUE), data = centralTrain)
+  cv_error[i] <- cv.glm(centralTrain, fit, K = 10)$delta[1]
+}
+#p2 <- plot(cv_error, type = "b", xlab = "Degree (variance, St)")
+```
+
+```{r, warning = FALSE}
+set.seed(1)
+cv_error <- rep(0,10)
+for(i in 1:10){
+  fit <- glm(skewness ~ poly(St, i, raw = TRUE), data = centralTrain)
+  cv_error[i] <- cv.glm(centralTrain, fit, K = 10)$delta[1]
+}
+#p3 <- plot(cv_error, type = "b", xlab = "Degree (skewness, St)")
+```
+
+```{r, warning = FALSE}
+set.seed(1)
+cv_error <- rep(0,10)
+for(i in 1:10){
+  fit <- glm(kurtosis ~ poly(St, i, raw = TRUE), data = centralTrain)
+  cv_error[i] <- cv.glm(centralTrain, fit, K = 10)$delta[1]
+}
+#p4 <- plot(cv_error, type = "b", xlab = "Degree (kurtosis, St)")
+
+
+```
+
+The optimal degree polynomials for predicting mean, variance, skew, and kurtosis are all 2 for Stokes Number.
+
+```{r}
+poly_mean <- lm(mean ~ poly(St, 2) + Re + Fr, data = centralTrain)
+yhat <- predict(poly_mean, newdata = centralVal)
+MSE_Poly_Mean <- sum((yhat - centralVal$mean)^2)/nrow(centralVal)
+```
+
+```{r}
+poly_var <- lm(variance ~ poly(St, 2) + Re + Fr, data = centralTrain)
+yhat <- predict(poly_var, newdata = centralVal)
+MSE_Poly_Var <- sum((yhat - centralVal$variance)^2)/nrow(centralVal)
+```
+
+```{r}
+poly_skew <- lm(skewness ~ poly(St, 2) + Re + Fr, data = centralTrain)
+yhat <- predict(poly_skew, newdata = centralVal)
+MSE_Poly_Skew <- sum((yhat - centralVal$skewness)^2)/nrow(centralVal)
+```
+
+```{r}
+poly_kurt <- lm(kurtosis ~ poly(St, 2) + Re + Fr, data = centralTrain)
+yhat <- predict(poly_kurt, newdata = centralVal)
+MSE_Poly_Kurt <- sum((yhat - centralVal$kurtosis)^2)/nrow(centralVal)
+
+
+```
+
+Using 2nd degree polynomial models while also predicting the moments with Froude and Reynolds numbers, we get lower MSEs for all four moments, however these MSEs are still relatively high, indicating that using polynomials would also not be the best way of predicting the moments.
+
+## Interaction Effects
+
+We check to see if there are significant interaction effects between the three predictors, and then construct a model with these interaction effects. We expect there to be significant interaction effects between the three predictors due to the similarity between the three numbers. For example, we expect Reynolds number (fluid turbulence) to have some relationship with Frouds number (gravitational acceleration).
+
+```{r}
+inter_fit_mean <- lm(mean ~ (Re + Fr + St)^2, data = centralTrain)
+yhat <- predict(inter_fit_mean, newdata = centralVal)
+MSE_Inter_Mean <- sum((yhat - centralVal$mean)^2)/nrow(centralVal)
+
+inter_fit_var <- lm(variance ~ (Re + Fr + St)^2, data = centralTrain)
+yhat <- predict(inter_fit_var, newdata = centralVal)
+MSE_Inter_Var <- sum((yhat - centralVal$variance)^2)/nrow(centralVal)
+
+
+inter_fit_skew <- lm(skewness ~ (Re + Fr + St)^2, data = centralTrain)
+yhat <- predict(inter_fit_skew, newdata = centralVal)
+MSE_Inter_Skew <- sum((yhat - centralVal$skewness)^2)/nrow(centralVal)
+
+
+inter_fit_kurt <- lm(kurtosis ~ (Re + Fr + St)^2, data = centralTrain)
+yhat <- predict(inter_fit_kurt, newdata = centralVal)
+MSE_Inter_Kurt <- sum((yhat - centralVal$kurtosis)^2)/nrow(centralVal)
+```
+
+## Trees
+
+Finally, we construct a tree-based model and a boosted model.
+
+```{r}
+tree_mean <- tree(mean ~ St + Fr + Re, data = centralTrain)
+yhat <- predict(tree_mean, newdata = centralVal)
+MSE_Tree_mean <- sum((yhat - centralVal$mean)^2)/nrow(centralVal)
+
+tree_var <- tree(variance ~ St + Fr + Re, data = centralTrain)
+yhat <- predict(tree_var, newdata = centralVal)
+MSE_Tree_var <- sum((yhat - centralVal$variance)^2)/nrow(centralVal)
+
+
+tree_skew <- tree(skewness ~ St + Fr + Re, data = centralTrain)
+yhat <- predict(tree_skew, newdata = centralVal)
+MSE_Tree_skew <- sum((yhat - centralVal$skewness)^2)/nrow(centralVal)
+
+
+tree_kurt <- tree(kurtosis ~ St + Fr + Re, data = centralTrain)
+yhat <- predict(tree_kurt, newdata = centralVal)
+MSE_Tree_kurt <- sum((yhat - centralVal$kurtosis)^2)/nrow(centralVal)
+
+```
+
+We tested whether pruning our tree would help predictive performance, but found that it did not. Therefore, we left all our trees as fully grown trees.
+
+```{r}
+library(gbm)
+set.seed(123)
+
+boost_mean <- gbm(mean ~ St + Fr + Re, data = centralTrain, 
+                    distribution = "gaussian", n.trees = 5000,
+                    interaction.depth = 4)
+yhat <- predict(boost_mean, newdata = centralVal, n.trees = 5000)
+MSE_Boost_mean <- sum((yhat - centralVal$mean)^2)/nrow(centralVal)
+
+
+boost_var <- gbm(variance ~ St + Fr + Re, data = centralTrain, 
+                    distribution = "gaussian", n.trees = 5000,
+                    interaction.depth = 4)
+yhat <- predict(boost_var, newdata = centralVal, n.trees = 5000)
+MSE_Boost_var <- sum((yhat - centralVal$variance)^2)/nrow(centralVal)
+
+boost_skew <- gbm(skewness ~ St + Fr + Re, data = centralTrain, 
+                    distribution = "gaussian", n.trees = 5000,
+                    interaction.depth = 4)
+yhat <- predict(boost_skew, newdata = centralVal, n.trees = 5000)
+MSE_Boost_skew <- sum((yhat - centralVal$skewness)^2)/nrow(centralVal)
+
+boost_kurt <- gbm(kurtosis ~ St + Fr + Re, data = centralTrain, 
+                    distribution = "gaussian", n.trees = 5000,
+                    interaction.depth = 4)
+yhat <- predict(boost_kurt, newdata = centralVal, n.trees = 5000)
+MSE_Boost_kurt <- sum((yhat - centralVal$kurtosis)^2)/nrow(centralVal)
+```
+
+## Results: Evaluating Our Model
+
+
+```{r}
+#| echo: false
+ModelMetricsMoment1 <- tribble(~ModelType, ~MSE,
+                        "Linear Regression", MSE_SLR_Mean,
+                        "2nd Degree Polynomial", MSE_Poly_Mean,
+                        "Interaction Effects", MSE_Inter_Mean,
+                        "Tree Based Model", MSE_Tree_mean,
+                        "Boosted Model", MSE_Boost_mean) 
+ModelMetricsMoment2 <- tribble(~ModelType, ~MSE,
+                        "Linear Regression", MSE_SLR_Var,
+                        "2nd Degree Polynomial", MSE_Poly_Var,
+                        "Interaction Effects", MSE_Inter_Var,
+                        "Tree Based Model", MSE_Tree_var,
+                        "Boosted Model", MSE_Boost_var) 
+ModelMetricsMoment3 <- tribble(~ModelType, ~MSE,
+                        "Linear Regression", MSE_SLR_Skew,
+                        "2nd Degree Polynomial", MSE_Poly_Skew,
+                        "Interaction Effects", MSE_Inter_Skew,
+                        "Tree Based Model", MSE_Tree_skew,
+                        "Boosted Model", MSE_Boost_skew) 
+ModelMetricsMoment4 <- tribble(~ModelType, ~MSE,
+                        "Linear Regression", MSE_SLR_Kurt,
+                        "2nd Degree Polynomial", MSE_Poly_Kurt,
+                        "Interaction Effects", MSE_Inter_Kurt,
+                        "Tree Based Model", MSE_Tree_kurt,
+                        "Boosted Model", MSE_Boost_kurt)
+```
+
+```{r}
+results <- c(ModelMetricsMoment1 |> arrange(MSE) |> slice(1) |> pull(ModelType),
+             ModelMetricsMoment2 |> arrange(MSE) |> slice(1) |> pull(ModelType),
+             ModelMetricsMoment3 |> arrange(MSE) |> slice(1) |> pull(ModelType),
+             ModelMetricsMoment4 |> arrange(MSE) |> slice(1) |> pull(ModelType))
+results
+```
+
+Our final results of the MSE for each model for all of the four moments leads us to selecting the tree-based model. This is the model that has the lowest MSE for `mean`, `variance`, `skew`, and `kurtosis`. The tree-based model makes for interpretable model for a tricky set of data which included only one quantitative predictor (Stokes number) and two factor variables (Reynolds number and Frouds number). While the data supports us using a tree-based model, we understand that there comes some uncertainty with this model selection. We randomly sampled a validation set to test our error and if we sampled a different batch of data, a different model may have predicted better.
+
+## Results: Investigating Relationships
+
+For each response variable, the input variables have a different effect if we examine the regression output. For the:
+
+-   Mean
+
+    -   As the size/density of the particles increase, the mean of the distribution increases as well.
+    -   A medium/ high gravitational acceleration is associated with a lower mean
+    -   A medium/high turbulence is associated with a lower mean.
+
+    Mean is difficult to interpret as it is subjective based off of what coordinates one is using. Therefore, the other moments will be more exciting to find connections between.
+
+-   Variance
+
+    -   As the size/density of particles increase, the variance of the particle clustering distribution increases as well. This makes sense as larger/more dense particles are less affected by gravity and other forces and are more associated with their beginning positions.
+
+    -   Medium/high turbulence is associated with lower variance of the particle clustering distribution. This also intuitively makes sense as when there is more turbulence, particles are more likely to hit each other resulting in more similar interactions between particles. As the law of large numbers claims, large numbers of interactions should move particle distributions towards the mean thus reducing its variance.
+
+    -   Interestingly medium gravity decreases the variance of the particle clustering distribution, while infinite gravity also decreases the variance but not as much as compared to medium turbulence. This may be a product on what exactly "infinite" gravity is and how it is used in the numeric solvers to get particle clusters.
+
+-   Skewness
+
+    -   As Stokes number (the particles' size/density) increases, we expect the skew of the spatial distribution and clustering of particles to increase.
+
+    -   As Reynolds number (fluid turbulence) increases from low to medium, low to high, and medium to high, we expect the skew of the spatial distribution and clustering of particles to decrease. Scientifically, this makes logical sense because higher fluid turbulence would cause the particles to interact more and draw more closely to the mean, ultimately decreasing the skew of the distribution.
+
+    -   Moving from a low Froude number to a medium or infinite Froude number, we expect the skew of the spatial distribution to decrease as well. However, we expect the decrease to be greater moving from low to medium Fr than from low to infinite Fr.
+
+-   Kurtosis
+
+    -   We see practically the same relationships between each of St, Re, and Fr with kurtosis as we did with skew
+
+    -   As Stokes number increases, we expect the kurtosis of the spatial distribution and clustering of particles to increase.
+
+    -   As Reynolds number increases, we expect the kurtosis to decrease.
+
+    -   We also see the same relationship with Froude number, as we expect the kurtosis of the distribution to decrease when moving from low to infinite Fr, but increase when moving from medium to infinite Fr.
+
+    -   These results are also intuitively logical, since a high Reynolds number will likely cause the particles to be centered closer around the mean, thus the distribution would have less fat tails. The similar, odd relationship between Froude number with both skew and kurtosis could be due to the fact that it is not quite possible to interpret infinite gravitational acceleration and what the repercussions of that would be in terms of the particle clustering distribution.
+
+## Conclusion
+
+#### Future Investigations
+
+This short report briefly investigated "the most important unsolved problem of classical physics", and because of its brevity most likely did not add anything significant to field of turbulence. Yet, it did open the researchers mind into what can and should be explored in this field's cross with machine learning. It is important to find a good predictive model to ease the burden of the computationally expensive numeric solvers which output the data. However, if possible it would be helpful to see the relationship between Froude's and Reynold's number when it is continuous like Stoke's number. It is difficult to only have three different values for Froude's number and Reynold's number, especially when one is `Inf`.
+
+
